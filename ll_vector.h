@@ -17,7 +17,8 @@ extern "C" {
 #include <timers.h>
 #include "light_link.h"
 
-	void InterruptHandlerHigh(void);
+	void data_handler(void);
+	void work_handler(void);
 
 	extern volatile struct V_data V;
 	extern volatile struct mbmcflagtype mbmcflag, mbmc_dumpflag;

@@ -8,10 +8,14 @@
 #ifndef LIGHT_LINK_H
 #define	LIGHT_LINK_H
 
+#include <GenericTypeDefs.h>
+#include "ll_defs.h"
+
 #ifdef	__cplusplus
 extern "C" {
 #endif
 
+	
 #ifdef INTTYPES
 #include <stdint.h>
 #else
