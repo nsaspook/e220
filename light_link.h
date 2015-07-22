@@ -15,7 +15,7 @@
 extern "C" {
 #endif
 
-	
+
 #ifdef INTTYPES
 #include <stdint.h>
 #else
@@ -54,12 +54,16 @@ extern "C" {
 		clock50, pwm4int_count;
 	} V_data;
 
-	typedef struct mbmcflagtype {
+	typedef struct L_data { // light link state data
+		uint32_t dac;
+	} L_data;
+
+	typedef struct llflagtype {
 		uint16_t mbmc_cmd, mbmc_data, mbmc_ack;
 		uint16_t host_cmd, host_data, host_ack;
 		uint32_t cmd_timeout, host_timeout, data_timeout, data_len, data_pos;
 		uint8_t rx_9bit, tx_9bit, mbmc_done, host_done, *data_ptr;
-	} volatile mbmcflagtype;
+	} volatile llflagtype;
 
 #ifdef	__cplusplus
 }

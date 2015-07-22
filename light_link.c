@@ -144,7 +144,8 @@ volatile uint32_t adc_count = 0, adc_error_count = 0,
 volatile uint16_t adc_buffer[64] = {0}, adc_data_in = 0;
 #pragma udata gpr13
 volatile struct V_data V;
-volatile struct mbmcflagtype mbmcflag, mbmc_dumpflag;
+volatile struct L_data L;
+volatile struct llflagtype mbmcflag, mbmc_dumpflag;
 volatile int16_t tx_tmp = 0, rx_tmp = 0;
 #pragma udata gpr2
 #pragma udata gpr9
@@ -273,7 +274,7 @@ void config_pic(void)
 
 }
 
-void main(void) /* SPI Master/Slave loopback */
+int main(void) /* SPI Master/Slave loopback */
 {
 	int16_t i, j, k = 0;
 
