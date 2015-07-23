@@ -350,27 +350,27 @@ void config_pic(void)
 	BAUDCON1 |= 0x08; // 16 bit mode speed register
 	BAUDCON2 |= 0x08; // 16 bit mode speed register
 
-	Open1USART(USART_TX_INT_ON & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT & USART_CONT_RX & USART_BRGH_LOW, 64); // 64mhz osc INTPLL 38.4 kbaud, 16bit divider
+	Open1USART(USART_TX_INT_ON & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_NINE_BIT & USART_CONT_RX & USART_BRGH_HIGH, 41); // 64mhz osc INTPLL 38.4 kbaud, 16bit divider
 	USART1_Status.TX_NINE = HIGH;
 	TXSTA1bits.TX9D = HIGH; // same in uC
 	RCSTA1bits.ADDEN = LOW; // receive all data
 	TXSTA1bits.TX9 = HIGH;
 	RCSTA1bits.RX9 = HIGH;
-	SPBRGH1 = 0x00; // 0x01	9600
-	SPBRG1 = 0x40; // 0x03	9600
+	SPBRGH1 = 0x00;
+	SPBRG1 = 41;
 
 	/*
 	 * Open the USART configured as
 	 * 9N1, 375000 baud, transmit/receive INT mode
 	 */
-	Open2USART(USART_TX_INT_ON & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT & USART_CONT_RX & USART_BRGH_LOW, 64); // 64mhz osc INTPLL 38.4 kbaud, 16bit divider
+	Open2USART(USART_TX_INT_ON & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_NINE_BIT & USART_CONT_RX & USART_BRGH_HIGH, 41); // 64mhz osc INTPLL 38.4 kbaud, 16bit divider
 	USART2_Status.TX_NINE = HIGH;
 	TXSTA2bits.TX9D = HIGH; // same in uC
 	RCSTA2bits.ADDEN = LOW; // receive all data
 	TXSTA2bits.TX9 = HIGH;
 	RCSTA2bits.RX9 = HIGH;
 	SPBRGH2 = 0x00;
-	SPBRG2 = 0x40;
+	SPBRG2 = 41;
 
 	while (DataRdy1USART()) { // dump 1 rx data`
 		Read1USART();
