@@ -350,7 +350,7 @@ void config_pic(void)
 	BAUDCON1 |= 0x08; // 16 bit mode speed register
 	BAUDCON2 |= 0x08; // 16 bit mode speed register
 
-	Open1USART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_NINE_BIT & USART_CONT_RX & USART_BRGH_HIGH, 41); // 64mhz osc INTPLL 38.4 kbaud, 16bit divider
+	Open1USART(USART_TX_INT_ON & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_NINE_BIT & USART_CONT_RX & USART_BRGH_HIGH, 41); // 64mhz osc INTPLL 38.4 kbaud, 16bit divider
 	USART1_Status.TX_NINE = HIGH;
 	TXSTA1bits.TX9D = HIGH; // same in uC
 	RCSTA1bits.ADDEN = LOW; // receive all data
@@ -363,9 +363,9 @@ void config_pic(void)
 	 * Open the USART configured as
 	 * 9N1, 375000 baud, transmit/receive INT mode
 	 */
-	Open2USART(USART_TX_INT_OFF & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_NINE_BIT & USART_CONT_RX & USART_BRGH_HIGH, 41); // 64mhz osc INTPLL 38.4 kbaud, 16bit divider
+	Open2USART(USART_TX_INT_ON & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_NINE_BIT & USART_CONT_RX & USART_BRGH_HIGH, 41); // 64mhz osc INTPLL 38.4 kbaud, 16bit divider
 	USART2_Status.TX_NINE = HIGH;
-	TXSTA2bits.TX9D = HIGH; // same in uC
+	TXSTA2bits.TX9D = LOW; // same in uC
 	RCSTA2bits.ADDEN = LOW; // receive all data
 	TXSTA2bits.TX9 = HIGH;
 	RCSTA2bits.RX9 = HIGH;
@@ -418,7 +418,8 @@ void main(void) /* SPI Master/Slave loopback */
 			for (j = 0; j < 1; j++) {
 			}
 		}
-	putrs2USART("testing ");
+		TXSTA2bits.TX9D = LOW; // same in uC
+		TXREG2 = 0b11111111;
 	}
 
 }
