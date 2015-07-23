@@ -77,8 +77,8 @@ ifneq ($(INFORMATION_MESSAGE), )
 endif
 	${MAKE}  -f nbproject/Makefile-default.mk dist/${CND_CONF}/${IMAGE_TYPE}/mx_test_pic18_2.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
 
-MP_PROCESSOR_OPTION=18F25K22
-MP_PROCESSOR_OPTION_LD=18f25k22
+MP_PROCESSOR_OPTION=18F45K80
+MP_PROCESSOR_OPTION_LD=18f45k80
 MP_LINKER_DEBUG_OPTION=
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: assemble

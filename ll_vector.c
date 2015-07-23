@@ -92,18 +92,18 @@ void data_handler(void)
 		adc_count++; // just keep count
 		adc_buffer[channel] = ADRES;
 		if (upper) {
-			SSP2BUF = (uint8_t) (adc_buffer[channel] >> 8); // stuff with upper 8 bits
+			SSPBUF = (uint8_t) (adc_buffer[channel] >> 8); // stuff with upper 8 bits
 		} else {
-			SSP2BUF = (uint8_t) adc_buffer[channel]; // stuff with lower 8 bits
+			SSPBUF = (uint8_t) adc_buffer[channel]; // stuff with lower 8 bits
 		}
 		spi_comm.ADC_DATA = TRUE;
 		DLED1 = !DLED1;
 	}
 
 	/* we only get this when the master  wants data, the slave never generates one */
-	if (PIR3bits.SSP2IF) { // SPI port #2 SLAVE receiver
-		PIR3bits.SSP2IF = LOW;
-		data_in2 = SSP2BUF;
+	if (PIR1bits.SSPIF) { // SPI port #2 SLAVE receiver
+		PIR1bits.SSPIF = LOW;
+		data_in2 = SSPBUF;
 
 		DLED0 = HIGH; // rx data led off
 		if (PIR3bits.RC2IF) { // we need to read the buffer in sync with the *_CHAR_* commands so it's polled
