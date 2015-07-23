@@ -148,7 +148,7 @@ void data_handler(void)
 
 		if (command == CMD_CHAR_DATA) { // get upper 4 bits send bits and send the data
 			if (char_status & UART_TX_MASK) {
-				TXREG2 = ((data_in2 & LO_NIBBLE) << 4) | char_txtmp; // send data to RS-232 #2 output
+//				TXREG2 = ((data_in2 & LO_NIBBLE) << 4) | char_txtmp; // send data to RS-232 #2 output
 				DLED6 = !DLED6; // tx data
 			} else {
 				DLED6 = LOW; // TX busy, overun
