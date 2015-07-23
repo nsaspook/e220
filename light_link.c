@@ -1,4 +1,4 @@
-#define P25K22
+#define P45K80
 /* Parts of this code were modified from
  *  http://www.d.umn.edu/~cprince/PubRes/Hardware/SPI/
  * examples
@@ -103,6 +103,73 @@
 
 #endif
 
+#ifdef P45K80
+// PIC18F45K80 Configuration Bit Settings
+#include <p18f45k80.h>
+
+// CONFIG1L
+#pragma config RETEN = OFF      // VREG Sleep Enable bit (Ultra low-power regulator is Disabled (Controlled by REGSLP bit))
+#pragma config INTOSCSEL = HIGH // LF-INTOSC Low-power Enable bit (LF-INTOSC in High-power mode during Sleep)
+#pragma config SOSCSEL = HIGH   // SOSC Power Selection and mode Configuration bits (High Power SOSC circuit selected)
+#pragma config XINST = ON       // Extended Instruction Set (Enabled)
+
+// CONFIG1H
+#pragma config FOSC = INTIO2    // Oscillator (Internal RC oscillator)
+#pragma config PLLCFG = ON      // PLL x4 Enable bit (Enabled)
+#pragma config FCMEN = OFF      // Fail-Safe Clock Monitor (Disabled)
+#pragma config IESO = OFF       // Internal External Oscillator Switch Over Mode (Disabled)
+
+// CONFIG2L
+#pragma config PWRTEN = OFF     // Power Up Timer (Disabled)
+#pragma config BOREN = SBORDIS  // Brown Out Detect (Enabled in hardware, SBOREN disabled)
+#pragma config BORV = 3         // Brown-out Reset Voltage bits (1.8V)
+#pragma config BORPWR = ZPBORMV // BORMV Power level (ZPBORMV instead of BORMV is selected)
+
+// CONFIG2H
+#pragma config WDTEN = OFF      // Watchdog Timer (WDT disabled in hardware; SWDTEN bit disabled)
+#pragma config WDTPS = 8192     // Watchdog Postscaler (1:8192)
+
+// CONFIG3H
+#pragma config CANMX = PORTB    // ECAN Mux bit (ECAN TX and RX pins are located on RB2 and RB3, respectively)
+#pragma config MSSPMSK = MSK7   // MSSP address masking (7 Bit address masking mode)
+#pragma config MCLRE = ON       // Master Clear Enable (MCLR Enabled, RE3 Disabled)
+
+// CONFIG4L
+#pragma config STVREN = ON      // Stack Overflow Reset (Enabled)
+#pragma config BBSIZ = BB2K     // Boot Block Size (2K word Boot Block size)
+
+// CONFIG5L
+#pragma config CP0 = OFF        // Code Protect 00800-01FFF (Disabled)
+#pragma config CP1 = OFF        // Code Protect 02000-03FFF (Disabled)
+#pragma config CP2 = OFF        // Code Protect 04000-05FFF (Disabled)
+#pragma config CP3 = OFF        // Code Protect 06000-07FFF (Disabled)
+
+// CONFIG5H
+#pragma config CPB = OFF        // Code Protect Boot (Disabled)
+#pragma config CPD = OFF        // Data EE Read Protect (Disabled)
+
+// CONFIG6L
+#pragma config WRT0 = OFF       // Table Write Protect 00800-01FFF (Disabled)
+#pragma config WRT1 = OFF       // Table Write Protect 02000-03FFF (Disabled)
+#pragma config WRT2 = OFF       // Table Write Protect 04000-05FFF (Disabled)
+#pragma config WRT3 = OFF       // Table Write Protect 06000-07FFF (Disabled)
+
+// CONFIG6H
+#pragma config WRTC = OFF       // Config. Write Protect (Disabled)
+#pragma config WRTB = OFF       // Table Write Protect Boot (Disabled)
+#pragma config WRTD = OFF       // Data EE Write Protect (Disabled)
+
+// CONFIG7L
+#pragma config EBTR0 = OFF      // Table Read Protect 00800-01FFF (Disabled)
+#pragma config EBTR1 = OFF      // Table Read Protect 02000-03FFF (Disabled)
+#pragma config EBTR2 = OFF      // Table Read Protect 04000-05FFF (Disabled)
+#pragma config EBTR3 = OFF      // Table Read Protect 06000-07FFF (Disabled)
+
+// CONFIG7H
+#pragma config EBTRB = OFF      // Table Read Protect Boot (Disabled)
+
+#endif
+
 #include <p18cxxx.h>
 #include <spi.h>
 #include <timers.h>
@@ -179,6 +246,7 @@ void wdtdelay(unsigned long delay)
 
 void config_pic(void)
 {
+#ifdef P25K22
 	OSCCON = 0x70; // internal osc 16mhz, CONFIG OPTION 4XPLL for 64MHZ
 	OSCTUNE = 0xC0; // 4x pll
 	TRISC = 0b11111100; // [0..1] outputs for DIAG leds [2..7] for analog
@@ -216,51 +284,108 @@ void config_pic(void)
 	ANSELC = 0b11111100; // analog bit enables
 	VREFCON0 = 0b11100000; // ADC voltage ref 2.048 volts
 	OpenADC(ADC_FOSC_64 & ADC_RIGHT_JUST & ADC_12_TAD, ADC_CH0 & ADC_INT_ON, ADC_REF_FVR_BUF & ADC_REF_VDD_VSS); // open ADC channel
+#endif
+
+#ifdef P45K80
+	OSCCON = 0x70; // internal osc 16mhz, CONFIG OPTION 4XPLL for 64MHZ
+	OSCTUNE = 0b01000000; // 4x pll
+	SLRCON = 0x00; // all slew rates to max
+	TRISA = 0b00111111; // [0..5] input, [6..7] outputs for LEDS
+	LATA = 0b11000000;
+	TRISB = 0b00111111; // RB6..7 outputs
+	INTCON2bits.RBPU = 0; // turn on weak pullups
+	INTCONbits.RBIE = 0; // disable PORTB interrupts
+	INTCONbits.INT0IE = 0; // disable interrupt
+	INTCONbits.INT0IF = 0; // disable interrupt
+	INTCONbits.RBIF = LOW; // reset B flag
+	IOCB = 0x00;
+	TRISC = 0b10011000; // [0..2,5..6] outputs
+	TRISD = 0b10000000; // [0..5] outputs and rs232 RD7 input, RD6 output
+	LATD = 0xff; // all LEDS off/outputs high
+	TRISE = 0b00000111; // [0..2] inputs, N/A others for 40 pin chip
+
+	/* SPI pins setup */
+	TRISCbits.TRISC3 = 1; // SCK pins clk in SLAVE
+	TRISCbits.TRISC4 = 1; // SDI
+	TRISCbits.TRISC5 = 0; // SDO
+	TRISAbits.TRISA5 = 1; // SS2
+
+	/* ADC channels setup */
+	TRISAbits.TRISA0 = HIGH; // an0
+	TRISAbits.TRISA1 = HIGH; // an1
+	TRISAbits.TRISA2 = HIGH; // an2
+	TRISAbits.TRISA3 = HIGH; // an3
+	TRISAbits.TRISA5 = HIGH; // an4 SS don't use for analog
+	TRISEbits.TRISE0 = HIGH; // an5
+	TRISEbits.TRISE1 = HIGH; // an6
+	TRISEbits.TRISE2 = HIGH; // an7
+	TRISBbits.TRISB1 = HIGH; // an8
+	TRISBbits.TRISB4 = HIGH; // an9
+
+	/* CAN TX/RX setup, alt MUX to PORT C */
+	TRISCbits.TRISC6 = 0; // digital output,CAN TX
+	TRISCbits.TRISC7 = 1; // digital input, CAN RX
+
+	/* RS-232 #2 TX/RX setup */
+	TRISDbits.TRISD6 = 0; // digital output,TX
+	TRISDbits.TRISD7 = 1; // digital input, RX
+
+	OpenADC(ADC_FOSC_64 & ADC_RIGHT_JUST & ADC_20_TAD, ADC_CH0 & ADC_INT_ON, ADC_REF_VDD_VSS); // open ADC channel
+	ANCON0 = 0b11101111; // analog bit enables
+	ANCON1 = 0b00000011; // analog bit enables
+	ADCON1 = 0b11100000; // ADC voltage ref 2.048 volts, vref- and neg channels to Vss
+
+#endif
 
 	PIE1bits.ADIE = HIGH; // the ADC interrupt enable bit
 	IPR1bits.ADIP = HIGH; // ADC use high pri
 
-	OpenSPI2(SLV_SSON, MODE_00, SMPMID); // Must be SMPMID in slave mode
-	SSP2BUF = CMD_DUMMY_CFG;
+	OpenSPI(SLV_SSON, MODE_00, SMPMID); // Must be SMPMID in slave mode
+	SSPBUF = CMD_DUMMY_CFG;
 
-		/*
-		 * Open the USART configured as
-		 * 9N1, 38400,38400 baud, in send and receive INT mode
-		 */
-		BAUDCON1 |= 0x08; // 16 bit mode speed register
-		BAUDCON2 |= 0x08; // 16 bit mode speed register
+	/*
+	 * Open the USART configured as
+	 * 9N1, 375000 baud, in send and receive INT mode
+	 */
+	BAUDCON1 |= 0x08; // 16 bit mode speed register
+	BAUDCON2 |= 0x08; // 16 bit mode speed register
 
-		Open1USART(USART_TX_INT_ON & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT & USART_CONT_RX & USART_BRGH_LOW, 64); // 64mhz osc INTPLL 38.4 kbaud, 16bit divider
-		USART1_Status.TX_NINE = HIGH; 
-		TXSTA1bits.TX9D = HIGH; // same in uC
-		RCSTA1bits.ADDEN = LOW; // receive all data
-		TXSTA1bits.TX9 = HIGH;
-		RCSTA1bits.RX9 = HIGH;
-		SPBRGH1 = 0x00; // 0x01	9600
-		SPBRG1 = 0x40; // 0x03	9600
+	Open1USART(USART_TX_INT_ON & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT & USART_CONT_RX & USART_BRGH_LOW, 64); // 64mhz osc INTPLL 38.4 kbaud, 16bit divider
+	USART1_Status.TX_NINE = HIGH;
+	TXSTA1bits.TX9D = HIGH; // same in uC
+	RCSTA1bits.ADDEN = LOW; // receive all data
+	TXSTA1bits.TX9 = HIGH;
+	RCSTA1bits.RX9 = HIGH;
+	SPBRGH1 = 0x00; // 0x01	9600
+	SPBRG1 = 0x40; // 0x03	9600
 
-		/*
-		 * Open the USART configured as
-		 * 8N1, 38400,38400 baud, transmit/receive INT mode
-		 */
-		Open2USART(USART_TX_INT_ON & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT & USART_CONT_RX & USART_BRGH_LOW, 64); // 64mhz osc INTPLL 38.4 kbaud, 16bit divider
-		SPBRGH2 = 0x00;
-		SPBRG2 = 0x40;
+	/*
+	 * Open the USART configured as
+	 * 9N1, 375000 baud, transmit/receive INT mode
+	 */
+	Open2USART(USART_TX_INT_ON & USART_RX_INT_ON & USART_ASYNCH_MODE & USART_EIGHT_BIT & USART_CONT_RX & USART_BRGH_LOW, 64); // 64mhz osc INTPLL 38.4 kbaud, 16bit divider
+	USART2_Status.TX_NINE = HIGH;
+	TXSTA2bits.TX9D = HIGH; // same in uC
+	RCSTA2bits.ADDEN = LOW; // receive all data
+	TXSTA2bits.TX9 = HIGH;
+	RCSTA2bits.RX9 = HIGH;
+	SPBRGH2 = 0x00;
+	SPBRG2 = 0x40;
 
-		while (DataRdy1USART()) { // dump 1 rx data`
-			Read1USART();
-		};
-		while (DataRdy2USART()) { // dump 2 rx data
-			Read2USART();
-		};
+	while (DataRdy1USART()) { // dump 1 rx data`
+		Read1USART();
+	};
+	while (DataRdy2USART()) { // dump 2 rx data
+		Read2USART();
+	};
 
 	/* System activity timer, can reset the processor */
 	OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_256);
 	WriteTimer0(TIMEROFFSET); //      start timer0 at 1 second ticks
 
 	/* clear SPI module possible flag and enable interrupts*/
-	PIR3bits.SSP2IF = LOW;
-	PIE3bits.SSP2IE = HIGH;
+	PIR1bits.SSPIF = LOW;
+	PIE1bits.SSPIE = HIGH;
 
 
 	/* Enable interrupt priority */
@@ -270,11 +395,10 @@ void config_pic(void)
 	INTCONbits.GIEL = HIGH;
 
 	/* clear any SSP error bits */
-	SSP2CON1bits.WCOL = SSP2CON1bits.SSPOV = LOW;
-
+	SSPCON1bits.WCOL = SSPCON1bits.SSPOV = LOW;
 }
 
-int main(void) /* SPI Master/Slave loopback */
+void main(void) /* SPI Master/Slave loopback */
 {
 	int16_t i, j, k = 0;
 
@@ -284,8 +408,8 @@ int main(void) /* SPI Master/Slave loopback */
 
 	while (1) { // just loop and output results on DIAG LCD for 8722
 
-		if (SSP2CON1bits.WCOL || SSP2CON1bits.SSPOV) { // check for overruns/collisions
-			SSP2CON1bits.WCOL = SSP2CON1bits.SSPOV = 0;
+		if (SSPCON1bits.WCOL || SSPCON1bits.SSPOV) { // check for overruns/collisions
+			SSPCON1bits.WCOL = SSPCON1bits.SSPOV = 0;
 			adc_error_count = adc_count - adc_error_count;
 		}
 
