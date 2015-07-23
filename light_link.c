@@ -340,7 +340,7 @@ void config_pic(void)
 	PIE1bits.ADIE = HIGH; // the ADC interrupt enable bit
 	IPR1bits.ADIP = HIGH; // ADC use high pri
 
-	OpenSPI(SLV_SSON, MODE_00, SMPMID); // Must be SMPMID in slave mode
+	OpenSPI(SPI_FOSC_64, MODE_00, SMPMID); // Must be SMPMID in slave mode
 	SSPBUF = CMD_DUMMY_CFG;
 
 	/*
@@ -383,10 +383,8 @@ void config_pic(void)
 	OpenTimer0(TIMER_INT_ON & T0_16BIT & T0_SOURCE_INT & T0_PS_1_256);
 	WriteTimer0(TIMEROFFSET); //      start timer0 at 1 second ticks
 
-	/* clear SPI module possible flag and enable interrupts*/
+	/* clear SPI module possible flag */
 	PIR1bits.SSPIF = LOW;
-	PIE1bits.SSPIE = HIGH;
-
 
 	/* Enable interrupt priority */
 	RCONbits.IPEN = HIGH;
