@@ -1,36 +1,6 @@
 #define P45K80
-/* Parts of this code were modified from
- *  http://www.d.umn.edu/~cprince/PubRes/Hardware/SPI/
- * examples
+/* 
  *
- * Fully interrupt drived SPI slave ADC for RPi via the daq_gert linux module
- * 8722
- * Port E is the main led diag port
- * PORT H is the LCD port
- * 25k22
- * Pins C0,C1 are the diag LED pins.
- * SPI 2 has been config'd as the slave with chip select.
- * DIP8 Pins for MCP3002 header
- * Pin 21   RB0	SPI Chip-Select	Pin 1
- * Pin 22   RB1	SPI Clock	Pin 7
- * Pin 23   RB2	SPI Data In	Pin 5
- * Pin 24   RB3	SPI Data Out	Pin 6
- * Pin 8    Vss			Pin 4
- * Pin 20   Vdd			Pin 8
- * Pin 2    RA0	ANA0		Pin 2
- * Pin 3    RA1	ANA1		Pin 2
- * The I/O and clock pins IDC connector pins
- * have been interconnected in the standard way for a PIC18F8722 chip EET Board
- *
- * Version	0.7 minor software cleanups.
- *		0.06 P25K22 Set PIC speed to 64mhz and use have ADC use FOSC_64,12_TAD
- *		0.05 Fixed the P25K22 version to work correctly.
- *		0.04 The testing hardware is mainly a pic18f8722 with a
- *		LCD display and PORTE bit leds.
- *		define the CPU type below.
- *
- *		The WatchDog and timer0 are used to check link status
- *		and to reset the chip if hung or confused.
  *
  * spam@sma2.rain.com   Jul 2015
  */
@@ -184,35 +154,19 @@
 #include "light_link.h"
 #include "ll_vector.h"
 
-/*
- * bit 7 high for commands sent from the MASTER
- * bit 6 0 send lower or 1 send upper byte ADC result first
- * bits 3..0 port address
- *
- * bit 7 low  for config data sent in CMD_DUMMY per uC type
- * bits 6 config bit code always 1
- * bit	5 0=ADC ref VDD, 1=ADC rec FVR=2.048
- * bit  4 0=10bit adc, 1=12bit adc
- * bits 3..0 number of ADC channels
- * 
- */
-
-
-volatile struct spi_link_type spi_comm = {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE};
 volatile struct spi_stat_type spi_stat;
 
 const rom int8_t *build_date = __DATE__, *build_time = __TIME__;
 volatile uint8_t data_in2, adc_buffer_ptr = 0,
 	adc_channel = 0;
 
-volatile uint8_t dsi = 0; // LCD virtual console number
 volatile uint32_t adc_count = 0, adc_error_count = 0,
 	slave_int_count = 0, last_slave_int_count = 0;
 volatile uint16_t adc_buffer[64] = {0}, adc_data_in = 0;
 #pragma udata gpr13
 volatile struct V_data V;
 volatile struct L_data L;
-volatile struct llflagtype mbmcflag, mbmc_dumpflag;
+volatile struct llflagtype ll_flag, ll_dumpflag;
 volatile int16_t tx_tmp = 0, rx_tmp = 0;
 #pragma udata gpr2
 #pragma udata gpr9
@@ -341,7 +295,6 @@ void config_pic(void)
 	IPR1bits.ADIP = HIGH; // ADC use high pri
 
 	OpenSPI(SPI_FOSC_64, MODE_00, SMPMID); // Must be SMPMID in slave mode
-	SSPBUF = CMD_DUMMY_CFG;
 
 	/*
 	 * Open the USART configured as
