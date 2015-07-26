@@ -153,6 +153,7 @@
 #include <GenericTypeDefs.h>
 #include "light_link.h"
 #include "ll_vector.h"
+#include "ringbufs.h"
 
 volatile struct spi_stat_type spi_stat;
 
@@ -165,10 +166,10 @@ volatile uint32_t adc_count = 0, adc_error_count = 0,
 volatile uint16_t adc_buffer[64] = {0}, adc_data_in = 0;
 #pragma udata gpr13
 volatile struct V_data V;
-volatile struct L_data L;
 volatile struct llflagtype ll_flag, ll_dumpflag;
 volatile int16_t tx_tmp = 0, rx_tmp = 0;
 #pragma udata gpr2
+volatile struct L_data L;
 #pragma udata gpr9
 
 //High priority interrupt vector, placed at address HIGH_VECTOR
@@ -200,6 +201,16 @@ void wdtdelay(unsigned long delay)
 
 void config_pic(void)
 {
+	/* setup the link buffers first */
+	L.rx1b = &L.ring_buf1;
+	L.tx1b = &L.ring_buf2;
+	L.rx2b = &L.ring_buf3;
+	L.tx2b = &L.ring_buf4;
+	ringBufS_init(L.rx1b);
+	ringBufS_init(L.tx1b);
+	ringBufS_init(L.rx2b);
+	ringBufS_init(L.tx2b);
+
 #ifdef P25K22
 	OSCCON = 0x70; // internal osc 16mhz, CONFIG OPTION 4XPLL for 64MHZ
 	OSCTUNE = 0xC0; // 4x pll
@@ -369,8 +380,17 @@ void main(void) /* SPI Master/Slave loopback */
 			for (j = 0; j < 1; j++) {
 			}
 		}
-		TXSTA2bits.TX9D = LOW; // same in uC
-		TXREG2 = 0b11111111;
+
+		ringBufS_put(L.tx2b, 0b000000000);
+		ringBufS_put(L.tx2b, 0b111111111);
+		ringBufS_put(L.tx2b, 0b011111111);
+		ringBufS_put(L.tx2b, 0b111111111);
+		ringBufS_put(L.tx2b, 0b011111111);
+		ringBufS_put(L.tx2b, 0b111111111);
+		ringBufS_put(L.tx2b, 0b000000000);
+		PIE3bits.TX2IE = 1;
+		PIR3bits.TX2IF = 1;
+		while (!ringBufS_empty(L.tx2b));
 	}
 
 }
