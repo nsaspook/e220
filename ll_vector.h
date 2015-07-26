@@ -19,6 +19,8 @@ extern "C" {
 
 	void data_handler(void);
 	void work_handler(void);
+	int8_t start_tx1(void);
+	int8_t start_tx2(void);
 
 	extern volatile struct V_data V;
 	extern volatile struct L_data L;

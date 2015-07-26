@@ -1,2 +1,0 @@
-function GetElqContentPersonalizationValue(strDataField){ var strTemp = '';        if(strDataField == 'V_ElqCompanyName' || strDataField == 'ElqCompanyName'){strTemp = 'Frontier Communications';}
-	return strTemp; } if (this.SetElqContent){ SetElqContent(); }

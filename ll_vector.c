@@ -95,3 +95,21 @@ void work_handler(void) // This is the low priority ISR routine, the high ISR ro
 {
 }
 #pragma	tmpdata
+
+int8_t start_tx1(void)
+{
+	int8_t tx_running = 0;
+	if (PIE1bits.TX1IE) tx_running = 1;
+	PIE1bits.TX1IE = 1;
+	PIR1bits.TX1IF = 1;
+	return tx_running;
+}
+
+int8_t start_tx2(void)
+{
+	int8_t tx_running = 1;
+	if (PIE3bits.TX2IE) tx_running = 1;
+	PIE3bits.TX2IE = 1;
+	PIR3bits.TX2IF = 1;
+	return tx_running;
+}
