@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=light_link.c ll_vector.c
+SOURCEFILES_QUOTED_IF_SPACED=light_link.c ll_vector.c ringbufs.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/light_link.o ${OBJECTDIR}/ll_vector.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/light_link.o.d ${OBJECTDIR}/ll_vector.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/light_link.o ${OBJECTDIR}/ll_vector.o ${OBJECTDIR}/ringbufs.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/light_link.o.d ${OBJECTDIR}/ll_vector.o.d ${OBJECTDIR}/ringbufs.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/light_link.o ${OBJECTDIR}/ll_vector.o
+OBJECTFILES=${OBJECTDIR}/light_link.o ${OBJECTDIR}/ll_vector.o ${OBJECTDIR}/ringbufs.o
 
 # Source Files
-SOURCEFILES=light_link.c ll_vector.c
+SOURCEFILES=light_link.c ll_vector.c ringbufs.c
 
 
 CFLAGS=
@@ -105,6 +105,14 @@ ${OBJECTDIR}/ll_vector.o: ll_vector.c  nbproject/Makefile-${CND_CONF}.mk
 	@${DEP_GEN} -d ${OBJECTDIR}/ll_vector.o 
 	@${FIXDEPS} "${OBJECTDIR}/ll_vector.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
+${OBJECTDIR}/ringbufs.o: ringbufs.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/ringbufs.o.d 
+	@${RM} ${OBJECTDIR}/ringbufs.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -p$(MP_PROCESSOR_OPTION) -ml --extended -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/ringbufs.o   ringbufs.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/ringbufs.o 
+	@${FIXDEPS} "${OBJECTDIR}/ringbufs.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
+	
 else
 ${OBJECTDIR}/light_link.o: light_link.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
@@ -121,6 +129,14 @@ ${OBJECTDIR}/ll_vector.o: ll_vector.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ml --extended -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/ll_vector.o   ll_vector.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/ll_vector.o 
 	@${FIXDEPS} "${OBJECTDIR}/ll_vector.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
+	
+${OBJECTDIR}/ringbufs.o: ringbufs.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/ringbufs.o.d 
+	@${RM} ${OBJECTDIR}/ringbufs.o 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ml --extended -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/ringbufs.o   ringbufs.c 
+	@${DEP_GEN} -d ${OBJECTDIR}/ringbufs.o 
+	@${FIXDEPS} "${OBJECTDIR}/ringbufs.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
 endif
 

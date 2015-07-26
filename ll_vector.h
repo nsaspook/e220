@@ -21,6 +21,7 @@ extern "C" {
 	void work_handler(void);
 
 	extern volatile struct V_data V;
+	extern volatile struct L_data L;
 	extern volatile struct llflagtype ll_flag, ll_dumpflag;
 	extern volatile int16_t tx_tmp, rx_tmp;
 	extern volatile uint32_t adc_count, adc_error_count,

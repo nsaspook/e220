@@ -1,4 +1,5 @@
 #include "ll_vector.h"
+#include "ringbufs.h"
 
 //----------------------------------------------------------------------------
 // High priority interrupt routine
@@ -7,43 +8,38 @@
 
 void data_handler(void)
 {
-	static uint8_t channel = 0, upper, command, port_tmp, char_txtmp, char_rxtmp, char_status = 0,
-		c1, c2;
+	static uint16_t channel = 0, cr1, cr2, ct1, ct2;
 	static union Timers timer;
 
 	if (PIE1bits.TX1IE && PIR1bits.TX1IF) { // send data to host USART
-		V.mbmcdata_count++; // total data sent counter
-		V.c1tx_int++;
 		tx_tmp++; // count for 1 second
-		if (ll_flag.data_pos >= ll_flag.data_len) { // buffer has been sent
+		if (ringBufS_empty(L.tx1b)) { // buffer has been sent
 			if (TXSTA1bits.TRMT) { // last bit has been shifted out
 				PIE1bits.TX1IE = LOW; // stop data xmit
 			}
 		} else {
-			TXREG1 = *ll_flag.data_ptr; // send data and clear PIR1bits.TX1IF
-			ll_flag.data_pos++; // move the data pointer
-			ll_flag.data_ptr++; // move the buffer pointer position
+			ct1 = ringBufS_get(L.tx1b); // get the 9 bit data
+			TXSTA1bits.TX9D = (ct1 & 0b100000000) ? 1 : 0;
+			TXREG1 = ct1; // send data and clear FLAG
+			V.c1t_int++;
 		}
 	}
 
-	/* start with data_ptr pointed to address of data, data_len to length of data in bytes, data_pos to 0 to start at the beginning of data block */
-	/* then enable the interrupt and wait for the interrupt enable flag to clear
-	/* send buffer and count xmit data bytes for terminal link */
 	if (PIE3bits.TX2IE && PIR3bits.TX2IF) {
-		if (ll_dumpflag.data_pos >= ll_dumpflag.data_len) { // buffer has been sent
+		if (ringBufS_empty(L.tx2b)) { // buffer has been sent
 			if (TXSTA2bits.TRMT) { // last bit has been shifted out
 				PIE3bits.TX2IE = LOW; // stop data xmit
 			}
 		} else {
-			TXREG2 = *ll_dumpflag.data_ptr; // send data and clear PIR1bits.TX1IF
-			V.c2_int++;
-			ll_dumpflag.data_pos++; // move the data pointer
-			ll_dumpflag.data_ptr++; // move the buffer pointer position
+			ct2 = ringBufS_get(L.tx2b); // get the 9 bit data
+			TXSTA2bits.TX9D = (ct2 & 0b100000000) ? 1 : 0;
+			TXREG2 = ct2; // send data and clear FLAG
+			V.c2t_int++;
 		}
 	}
 
 	if (PIR1bits.RC1IF) { // is data from network 9n1 port
-		V.c1rx_int++; // total count
+		V.c1r_int++; // total count
 		rx_tmp++; // count for 1 second
 		if (RCSTA1bits.OERR) {
 			RCSTA1bits.CREN = LOW; // clear overrun
@@ -52,17 +48,25 @@ void data_handler(void)
 
 		/* clear com1 interrupt flag */
 		// a read clears the flag
-		c1 = RCREG1; // read data from port1 and clear PIR1bits.RC1IF
+		cr1 = RCREG1; // read data from port1 and clear PIR1bits.RC1IF
+		if (RCSTA1bits.RX9D) {
+			cr1 |= 0b100000000;
+		}
+		ringBufS_put(L.rx1b, cr1);
 	}
 
 	if (PIR3bits.RC2IF) { // is data from user command/dump terminal port
-		V.c2_int++;
+		V.c2r_int++;
 		if (RCSTA2bits.OERR) {
 			RCSTA2bits.CREN = LOW; //      clear overrun
 			RCSTA2bits.CREN = HIGH; // re-enable
 		}
 
-		c2 = RCREG2; // read from host port2 and clear PIR3bits.RC2IF
+		cr2 = RCREG2; // read from host port2 and clear PIR3bits.RC2IF
+		if (RCSTA2bits.RX9D) {
+			cr2 |= 0b100000000;
+		}
+		ringBufS_put(L.rx2b, cr2);
 	}
 
 	if (INTCONbits.TMR0IF) { // check timer0 irq 1 second timer int handler
