@@ -68,6 +68,7 @@ void data_handler(void)
 			cr2 |= 0b100000000;
 		}
 		ringBufS_put(L.rx2b, cr2);
+        if (cr2 == 0) LATDbits.LATD0=1; // DEBUG flasher
 	}
 
 	if (INTCONbits.TMR0IF) { // check timer0 irq 1 second timer int handler
