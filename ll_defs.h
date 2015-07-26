@@ -15,6 +15,9 @@ extern "C" {
 #define LOW_VECTOR      0x18            // ISR low address
 #define HIGH_VECTOR     0x8             // ISR high address
 	
+#define BAUD_FAST	41
+#define BAUD_SLOW	2
+	
 #define	TIMEROFFSET	26474           // timer0 16bit counter value for 1 second to overflow
 #define SLAVE_ACTIVE	10		// Activity counter level
 

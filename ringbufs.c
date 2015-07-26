@@ -1,6 +1,9 @@
 #include  <string.h>
 #include  "ringbufs.h"
 
+/*
+ * general ring buffer fuctions from the internet
+ */
 uint8_t modulo_inc(const uint8_t value, const uint8_t modulus)
 {
 	uint8_t my_value = value + 1;

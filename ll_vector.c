@@ -57,6 +57,7 @@ void data_handler(void)
 
 	if (PIR3bits.RC2IF) { // is data from user command/dump terminal port
 		V.c2r_int++;
+		LATDbits.LATD0 = !LATDbits.LATD0; // DEBUG flasher
 		if (RCSTA2bits.OERR) {
 			RCSTA2bits.CREN = LOW; //      clear overrun
 			RCSTA2bits.CREN = HIGH; // re-enable
@@ -96,9 +97,14 @@ void work_handler(void) // This is the low priority ISR routine, the high ISR ro
 }
 #pragma	tmpdata
 
+/* 
+ * start the tx usart running 
+ * return TRUE is it's already enabled
+ */
 int8_t start_tx1(void)
 {
 	int8_t tx_running = 0;
+	
 	if (PIE1bits.TX1IE) tx_running = 1;
 	PIE1bits.TX1IE = 1;
 	PIR1bits.TX1IF = 1;
@@ -107,7 +113,8 @@ int8_t start_tx1(void)
 
 int8_t start_tx2(void)
 {
-	int8_t tx_running = 1;
+	int8_t tx_running = 0;
+	
 	if (PIE3bits.TX2IE) tx_running = 1;
 	PIE3bits.TX2IE = 1;
 	PIR3bits.TX2IF = 1;
