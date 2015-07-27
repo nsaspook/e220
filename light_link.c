@@ -283,10 +283,10 @@ void config_pic(void) {
     TRISDbits.TRISD6 = 0; // digital output,TX
     TRISDbits.TRISD7 = 1; // digital input, RX
 
-    //    OpenADC(ADC_FOSC_64 & ADC_RIGHT_JUST & ADC_20_TAD, ADC_CH0 & ADC_INT_OFF, ADC_REF_VDD_VSS); // open ADC channel
-    //    ANCON0 = 0b11101111; // analog bit enables
-    //   ANCON1 = 0b00000011; // analog bit enables
-    //   ADCON1 = 0b11100000; // ADC voltage ref 2.048 volts, vref- and neg channels to Vss
+    OpenADC(ADC_FOSC_64 & ADC_RIGHT_JUST & ADC_20_TAD, ADC_CH0 & ADC_INT_ON, ADC_REF_VDD_VSS); // open ADC channel
+    ANCON0 = 0b11101111; // analog bit enables
+    ANCON1 = 0b00000011; // analog bit enables
+    ADCON1 = 0b11100000; // ADC voltage ref 2.048 volts, vref- and neg channels to Vss
 
 #endif
 
@@ -369,6 +369,8 @@ void main(void) /* SPI Master/Slave loopback */ {
         }
 
         ringBufS_put(L.tx2b, 0b000000000);
+        ringBufS_put(L.tx2b, 0b111111111);
+        ringBufS_put(L.tx2b, 0b011111111);
         ringBufS_put(L.tx2b, 0b111111111);
         ringBufS_put(L.tx2b, 0b011111111);
         ringBufS_put(L.tx2b, 0b111111111);
