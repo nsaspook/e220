@@ -68,7 +68,7 @@ void data_handler(void)
 			cr2 |= 0b100000000;
 		}
 		ringBufS_put(L.rx2b, cr2);
-        if (cr2 == 0) LATDbits.LATD0=1; // DEBUG flasher
+		if (cr2 == 0) LATDbits.LATD0 = 1; // DEBUG flasher
 	}
 
 	if (INTCONbits.TMR0IF) { // check timer0 irq 1 second timer int handler
@@ -105,7 +105,7 @@ void work_handler(void) // This is the low priority ISR routine, the high ISR ro
 int8_t start_tx1(void)
 {
 	int8_t tx_running = 0;
-	
+
 	if (PIE1bits.TX1IE) tx_running = 1;
 	PIE1bits.TX1IE = 1;
 	PIR1bits.TX1IF = 1;
@@ -115,7 +115,7 @@ int8_t start_tx1(void)
 int8_t start_tx2(void)
 {
 	int8_t tx_running = 0;
-	
+
 	if (PIE3bits.TX2IE) tx_running = 1;
 	PIE3bits.TX2IE = 1;
 	PIR3bits.TX2IF = 1;
