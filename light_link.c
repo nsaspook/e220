@@ -308,7 +308,7 @@ void config_pic(void) {
     RCSTA1bits.ADDEN = LOW; // receive all data
     TXSTA1bits.TX9 = HIGH;
     RCSTA1bits.RX9 = HIGH;
-    SPBRGH1 = BAUD_SLOW;
+    SPBRGH1 = BAUD_SLOW; // set to 2 for slow speed testing
     SPBRG1 = BAUD_FAST;
 
     /*
