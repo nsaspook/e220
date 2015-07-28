@@ -1,0 +1,498 @@
+Skip to main content
+
+<#main-content>
+Menu <#top> AVR Freaks </> AVR Freaks </>
+
+
+  AVR Freaks </>
+
+
+Main menu mobile
+
+  *
+    Home
+
+    </>
+  *
+    Forums
+
+    </forum>
+  *
+    Projects
+
+    </projects>
+  *
+    Vendors
+
+    </vendors>
+  *
+    Search
+
+    </search/site>
+  *
+    My summary
+
+    </user>
+  *
+    Privacy
+
+    <http://www.atmel.com/About/privacy.aspx>
+  *
+    Contact
+
+    <http://www.atmel.com/About/contact/distributors/default.aspx?contactType=Online%20Directory>
+  *
+    Site Use Terms
+
+    <http://www.atmel.com/About/legal.aspx>
+  *
+    Cookies
+
+    <http://www.atmel.com/About/cookies.aspx>
+
+  *
+    Forums
+
+    </forum>
+  *
+    Projects
+
+    </projects>
+  *
+    Vendors
+
+    </vendors>
+  *
+    WIKI
+
+    </wiki>
+
+  * Signup </user/register>
+  * Login </user/login?destination=home-new>
+
+
+Search form
+
+Search
+
+
+You are here
+
+ 1. Home </>
+ 2. » Forums </forum>
+ 3. » AVR Microcontrollers </forums/avr-microcontrollers>
+ 4. » megaAVR and tinyAVR </forums/megaavr-and-tinyavr>
+ 5. » LCD-Module EA DOG-M in SPI mode
+
+
+Main menu mobile
+
+  *
+    Home
+
+    </>
+  *
+    Forums
+
+    </forum>
+  *
+    Projects
+
+    </projects>
+  *
+    Vendors
+
+    </vendors>
+  *
+    Search
+
+    </search/site>
+  *
+    My summary
+
+    </user>
+  *
+    Privacy
+
+    <http://www.atmel.com/About/privacy.aspx>
+  *
+    Contact
+
+    <http://www.atmel.com/About/contact/distributors/default.aspx?contactType=Online%20Directory>
+  *
+    Site Use Terms
+
+    <http://www.atmel.com/About/legal.aspx>
+  *
+    Cookies
+
+    <http://www.atmel.com/About/cookies.aspx>
+
+  *
+    Forums
+
+    </forum>
+  *
+    Projects
+
+    </projects>
+  *
+    Vendors
+
+    </vendors>
+  *
+    WIKI
+
+    </wiki>
+
+
+    LCD-Module EA DOG-M in SPI mode
+
+Log in </user/login?destination=node/44011%23comment-form> or register
+</user/register?destination=node/44011%23comment-form> to post comments
+Last post </forum/lcd-module-ea-dog-m-spi-mode#comment-230623>
+6 posts / 0 new
+Author
+Message
+Dinu </users/dinu-0>
+Dinu's picture </users/dinu-0>
+Level: Newbie
+Joined: Mon. Nov 8, 2004
+Posts: 16 View posts </user/29373/content>
+Location: Heidelberg (Germany)
+#1
+
+</forum/lcd-module-ea-dog-m-spi-mode>
+Posted by Dinu </users/dinu-0>: Thu. Jan 18, 2007 - 10:08 AM
+Fivestar widget
+
+  * 1
+  * 2
+  * 3
+  * 4
+  * 5
+
+Total votes: 0
+
+Hello Freaks,
+
+I try to get the DOG-M LCD modules from www.lcd-module.com
+<http://www.lcd-module.com> running in SPI mode. Can somebody help me
+with code in GCC or assembler?
+
+I only need the function that sends a command/data byte to the ST7036
+controller and the init routine.
+
+My code works fine on a EA DIP162 in 4bit mode, but i see nothing on the
+SPI driven DOG-M.
+
+Pins D0..D5, E, R/W and RESET are set to H (via 15K resistor) and PSB is
+soldered to ground.
+
+Please use my email instead of Personal Message (rarly online:-)
+
+
+    Tags:
+
+AVR Microcontrollers
+</search/site?f[0]=im_taxonomy_forums%3A968&f[1]=bundle%3Aforum>,
+megaAVR and tinyAVR
+</search/site?f[0]=im_taxonomy_forums%3A591&f[1]=bundle%3Aforum>
+
+  * Log in </user/login?destination=node/44011%23comment-f/m> / register
+    </user/register?destination=node/44011%23comment-f/m> to post comments
+
+Top
+
+<#forum-topic-top>
+janeyolf </users/janeyolf4794>
+janeyolf's picture </users/janeyolf4794>
+Level: Hangaround
+Joined: Mon. Apr 8, 2002
+Posts: 137 View posts </user/4609/content>
+Location: Rogaland, Norway
+#2
+
+</comment/229571#comment-229571>
+Posted by janeyolf </users/janeyolf4794>: Thu. Jan 18, 2007 - 06:26 PM
+
+  * 1
+  * 2
+  * 3
+  * 4
+  * 5
+
+Total votes: 0
+
+Here is CVAVR SPI code for a DOG-M display:
+http://tech.groups.yahoo.com/group/codevisionavr/message/20721
+
+According to the author he got nothing on the display, but it might as
+well be a HW problem :) The code looks ok.
+
+  * Log in </user/login?destination=node/44011%23comment-form> or
+    register </user/register?destination=node/44011%23comment-form> to
+    post comments
+
+Top
+
+<#forum-topic-top>
+Dinu </users/dinu-0>
+Dinu's picture </users/dinu-0>
+Level: Newbie
+Joined: Mon. Nov 8, 2004
+Posts: 16 View posts </user/29373/content>
+Location: Heidelberg (Germany)
+#3
+
+</comment/229722#comment-229722>
+Posted by Dinu </users/dinu-0>: Fri. Jan 19, 2007 - 01:06 PM
+
+  * 1
+  * 2
+  * 3
+  * 4
+  * 5
+
+Total votes: 0
+
+*janeyolf wrote:
+
+*
+
+    Here is CVAVR SPI code for a DOG-M display:
+    http://tech.groups.yahoo.com/group/codevisionavr/message/20721quote]
+
+    Thanks janeyolf, that one was a quick answer.
+
+    Unfortunately I can't access the link (i'm no yahoo member:roll:).
+    Would yo be so nice and post the code snippet here?
+
+Please use my email instead of Personal Message (rarly online:-)
+
+  * Log in </user/login?destination=node/44011%23comment-form> or
+    register </user/register?destination=node/44011%23comment-form> to
+    post comments
+
+Top
+
+<#forum-topic-top>
+janeyolf </users/janeyolf4794>
+janeyolf's picture </users/janeyolf4794>
+Level: Hangaround
+Joined: Mon. Apr 8, 2002
+Posts: 137 View posts </user/4609/content>
+Location: Rogaland, Norway
+#4
+
+</comment/229811#comment-229811>
+Posted by janeyolf </users/janeyolf4794>: Fri. Jan 19, 2007 - 06:20 PM
+
+  * 1
+  * 2
+  * 3
+  * 4
+  * 5
+
+Total votes: 0
+
+This is for a 163 with 5V supply. If you are using 3V, the
+initialization will slightly different
+
+    // Copy of Erlend Hansens code at CVAVR yahoo forum
+
+    #define RS PORTB.1
+    #define CSB PORTB.0
+
+    // SPI initialization
+    // SPI Type: Master
+    // SPI Clock Rate: 57,600 kHz
+    // SPI Clock Phase: Cycle Start
+    // SPI Clock Polarity: High
+    // SPI Data Order: MSB First
+    SPCR=0x5F;
+    SPSR=0x00;
+
+    void main (void)
+    {
+    // SPI initialization
+    // SPI Type: Master
+    // SPI Clock Rate: 57,600 kHz
+    // SPI Clock Phase: Cycle Start
+    // SPI Clock Polarity: High
+    // SPI Data Order: MSB First
+    SPCR=0x5F;
+    SPSR=0x00;
+
+    initialize(); // fire up this damned shit
+    data('A'); // send data to display
+    data('B');
+    data('C');
+    }
+
+
+    void inst(unsigned char i) // transmit instruction byte to LCD
+    {
+    CSB =0; // reset serial reg
+    RS=0; // select instruction
+    delay_us(40);
+    spi(i); // send data
+    delay_us(80);
+    CSB=1;
+    delay_us(80);
+    }
+
+    void data(unsigned char i) // transmit data to LCD
+    {
+    CSB =0; // reset serial reg
+    RS=1; // select data
+    delay_us(40);
+    spi(i); // send data
+    delay_us(80);
+    CSB=1;
+    delay_us(80);
+    }
+
+
+    void initialize(void)
+    {
+    delay_ms(100);
+    inst(0x38); //8 bit data, 2 line (ram), instr. table 0
+    delay_ms(2);
+    inst(0x39); //8 bit data, 2 line (ram), instr. table 1
+    delay_ms(2);
+    inst(0x1D); // bias BS= 1/4 , 3 line LCD
+    delay_ms(2);
+    inst(0x7F); // contrast set for int. follower mode
+    delay_ms(2);
+    inst(0x51); // icon off, booster off, c5/c4 off
+    delay_ms(2);
+    inst(0x6C); // voltage follower on (+ ratio/gain)
+    delay_ms(200);
+    inst(0x0F); // disp. on, cursor on, blink
+    delay_ms(2);
+    inst(0x01); // CLEAR DISPLAY cursor home
+    delay_ms(2);
+    inst(0x06); // cursor direction + shift (0)
+    delay_ms(2);
+    }
+
+  * Log in </user/login?destination=node/44011%23comment-form> or
+    register </user/register?destination=node/44011%23comment-form> to
+    post comments
+
+Top
+
+<#forum-topic-top>
+Dinu </users/dinu-0>
+Dinu's picture </users/dinu-0>
+Level: Newbie
+Joined: Mon. Nov 8, 2004
+Posts: 16 View posts </user/29373/content>
+Location: Heidelberg (Germany)
+#5
+
+</comment/230296#comment-230296>
+Posted by Dinu </users/dinu-0>: Mon. Jan 22, 2007 - 09:26 AM
+
+  * 1
+  * 2
+  * 3
+  * 4
+  * 5
+
+Total votes: 0
+
+Interesting! With Erlend Hansens code at CVAVR, exactly that function
+SPI() is "hidden", that does not work at my side. I assume that SPI() is
+an intrinsic function, right?
+
+Since I work with GCC, I have to code SPI-function myself:
+
+    void lcdSendByte(uint8_t byte)
+    {
+    uint8_t		ii;
+
+    // CSB=L resets input buffer and counter!
+    // PORTB &= ~(1<<LCD_CSB)
+    CBI(PORTB, LCD_CSB);			
+    // send 8 bits via SPI to LCD, MSB first
+    for (ii = 0; ii < 8; ii++)
+    {
+    __asm__ volatile("nop");
+    __asm__ volatile("nop");
+    if (0 == (byte & 0b10000000))
+       CBI(PORTB, LCD_SI);  // SI=L
+    else
+       SBI(PORTB, LCD_SI);  // SI=H
+
+    CBI(PORTB, LCD_SCL);
+    __asm__ volatile("nop");
+    __asm__ volatile("nop");
+    byte = byte << 1;  // next bit
+    SBI(PORTB, LCD_SCL);
+    __asm__ volatile("nop");
+    __asm__ volatile("nop");
+    }
+    // CSB=H unselect device
+    // PORTB |= (1<<LCD_CSB)
+    SBI(PORTB, LCD_CSB);
+
+    // wait 50 microsecs 
+    lcdDelay50();
+    }
+
+I'm simply blind now (I had a nice weekend soldering my PCB back to
+4-bit interface, which worked well - now I'm shure it's not a hardware
+problem:-)
+
+Any idea?
+
+Please use my email instead of Personal Message (rarly online:-)
+
+  * Log in </user/login?destination=node/44011%23comment-form> or
+    register </user/register?destination=node/44011%23comment-form> to
+    post comments
+
+Top
+
+<#forum-topic-top>
+janeyolf </users/janeyolf4794>
+janeyolf's picture </users/janeyolf4794>
+Level: Hangaround
+Joined: Mon. Apr 8, 2002
+Posts: 137 View posts </user/4609/content>
+Location: Rogaland, Norway
+#6
+
+</comment/230623#comment-230623>
+Posted by janeyolf </users/janeyolf4794>: Tue. Jan 23, 2007 - 06:59 PM
+
+  * 1
+  * 2
+  * 3
+  * 4
+  * 5
+
+Total votes: 0
+
+What isn't working with your lcdSendByte()? Isn't it putting out the
+bits on the LCD_SI-pin like it should?
+
+  * Log in </user/login?destination=node/44011%23comment-form> or
+    register </user/register?destination=node/44011%23comment-form> to
+    post comments
+
+Top
+
+<#forum-topic-top>
+Jump To
+
+©2015 Atmel Corporation
+
+  * Privacy <http://www.atmel.com/About/privacy.aspx>
+  * Contact
+    <http://www.atmel.com/About/contact/distributors/default.aspx?contactType=Online%20Directory>
+  * Site Use Terms <http://www.atmel.com/About/legal.aspx>
+  * Cookies <http://www.atmel.com/About/cookies.aspx>
+
