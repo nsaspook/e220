@@ -386,14 +386,15 @@ void main(void) /* SPI Master/Slave loopback */
 		ringBufS_put(L.tx2b, 0b011111111);
 		ringBufS_put(L.tx2b, 0b111111111);
 		ringBufS_put(L.tx2b, 0b000000000);
-		start_tx2();
-		while (!ringBufS_empty(L.tx2b));
 
 		ringBufS_put(spi_link.tx1b, 0b000000000);
 		ringBufS_put(spi_link.tx1b, 0b011111111);
 		ringBufS_put(spi_link.tx1b, 0b101010101);
 		ringBufS_put(spi_link.tx1b, 0b110101010);
+
+		start_tx2();
 		start_lcd();
+		while (!ringBufS_empty(L.tx2b));
 		while (!ringBufS_empty(spi_link.tx1b));
 	}
 
