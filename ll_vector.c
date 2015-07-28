@@ -11,8 +11,18 @@ void data_handler(void)
 	static uint16_t channel = 0, cr1, cr2, ct1, ct2;
 	static union Timers timer;
 
+	if (PIE1bits.SSPIE && PIR1bits.SSPIF) { // send data to SPI bus
+		ct1 = SSPBUF; // read to clear the flag
+		if (ringBufS_empty(spi_link.tx1b)) { // buffer has been sent
+			PIE1bits.SSPIE = LOW; // stop data xmit
+		} else {
+			ct1 = ringBufS_get(spi_link.tx1b); // get the 16 bit data
+			spi_link.config = ct1>>8;
+			SSPBUF = ct1; // send data
+		}
+	}
+
 	if (PIE1bits.TX1IE && PIR1bits.TX1IF) { // send data to host USART
-		tx_tmp++; // count for 1 second
 		if (ringBufS_empty(L.tx1b)) { // buffer has been sent
 			if (TXSTA1bits.TRMT) { // last bit has been shifted out
 				PIE1bits.TX1IE = LOW; // stop data xmit

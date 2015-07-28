@@ -9,6 +9,7 @@
       <itemPath>ll_defs.h</itemPath>
       <itemPath>ringbufs.h</itemPath>
       <itemPath>cbuf.h</itemPath>
+      <itemPath>eadog.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -20,6 +21,7 @@
       <itemPath>light_link.c</itemPath>
       <itemPath>ll_vector.c</itemPath>
       <itemPath>ringbufs.c</itemPath>
+      <itemPath>eadog.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

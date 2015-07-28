@@ -18,9 +18,9 @@ extern "C" {
     extern volatile struct spi_link_type spi_link;
 
     void init_display(void);
-    void send__lcd_data(uint8_t);
-    void send_lcd_cmd(uint8_t);
-    void send_lcd_go(void);
+    void send__lcd_data(uint8_t, uint8_t);
+    void send_lcd_cmd(uint8_t, uint8_t);
+    void start_lcd(void);
 
 #ifdef	__cplusplus
 }
