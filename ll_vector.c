@@ -14,22 +14,35 @@ void data_handler(void)
 	if (PIE1bits.SSPIE && PIR1bits.SSPIF) { // send data to SPI bus
 		PIR1bits.SSPIF = LOW;
 		LATDbits.LATD1 = !LATDbits.LATD1;
-		ct1 = SSPBUF; // read to clear the BF flag, don't care about the data
-		if (ringBufS_empty(spi_link.tx1b)) { // buffer has been sent
-			PIE1bits.SSPIE = LOW; // stop data xmit
-			spi_link.TIMER = LOW;
-		} else {
-			ct_spi = ringBufS_get(spi_link.tx1b); // get the 16 bit data
-			spi_link.config = ct_spi >> 8;
-			spi_link.delay = LCD_SHORT;
-			if (spi_link.config & 0b00000001) spi_link.delay = LCD_LONG;
-			spi_link.TIMER = HIGH;
-			spi_link.DATA = HIGH;
-			INTCONbits.TMR0IF = HIGH; //set interrupt flag
+		ct1 = SSPBUF; // read to clear the BF flag, don't care about the data with LCD
+		if (spi_link.SPI_LCD) {
+			if (ringBufS_empty(spi_link.tx1b)) { // buffer has been sent
+				PIE1bits.SSPIE = LOW; // stop data xmit
+				spi_link.TIMER = LOW;
+				CSB = HIGH; // deselect the display
+			} else {
+				ct_spi = ringBufS_get(spi_link.tx1b); // get the 16 bit data
+				spi_link.config = ct_spi >> 8;
+
+				if (spi_link.config & 0b00000001) {
+					spi_link.delay = LCD_LONG;
+					RS = LOW; // send cmd
+				} else {
+					spi_link.delay = LCD_SHORT;
+					RS = HIGH; // send data
+				}
+				CSB = LOW; // select the display
+				spi_link.TIMER = HIGH;
+				spi_link.DATA = HIGH;
+				INTCONbits.TMR0IF = HIGH; //set interrupt flag
+			}
+		}
+		if (spi_link.SPI_AUX) {
+
 		}
 	}
 
-	if (PIE1bits.TX1IE && PIR1bits.TX1IF) { // send data to host USART
+	if (PIE1bits.TX1IE && PIR1bits.TX1IF) { // send data to USART
 		if (ringBufS_empty(L.tx1b)) { // buffer has been sent
 			if (TXSTA1bits.TRMT) { // last bit has been shifted out
 				PIE1bits.TX1IE = LOW; // stop data xmit
@@ -43,21 +56,20 @@ void data_handler(void)
 	}
 
 	if (PIE3bits.TX2IE && PIR3bits.TX2IF) {
-		if (ringBufS_empty(L.tx2b)) { // buffer has been sent
-			if (TXSTA2bits.TRMT) { // last bit has been shifted out
-				PIE3bits.TX2IE = LOW; // stop data xmit
+		if (ringBufS_empty(L.tx2b)) { 
+			if (TXSTA2bits.TRMT) {
+				PIE3bits.TX2IE = LOW;
 			}
 		} else {
-			ct2 = ringBufS_get(L.tx2b); // get the 9 bit data
+			ct2 = ringBufS_get(L.tx2b);
 			TXSTA2bits.TX9D = (ct2 & 0b100000000) ? 1 : 0;
-			TXREG2 = ct2; // send data and clear FLAG
+			TXREG2 = ct2;
 			V.c2t_int++;
 		}
 	}
 
-	if (PIR1bits.RC1IF) { // is data from network 9n1 port
+	if (PIR1bits.RC1IF) { // is data from network down-link 9n1 port
 		V.c1r_int++; // total count
-		rx_tmp++; // count for 1 second
 		if (RCSTA1bits.OERR) {
 			RCSTA1bits.CREN = LOW; // clear overrun
 			RCSTA1bits.CREN = HIGH; // re-enable
@@ -65,14 +77,14 @@ void data_handler(void)
 
 		/* clear com1 interrupt flag */
 		// a read clears the flag
-		cr1 = RCREG1; // read data from port1 and clear PIR1bits.RC1IF
+		cr1 = RCREG1; // read from port1 and clear PIR1bits.RC1IF
 		if (RCSTA1bits.RX9D) {
 			cr1 |= 0b100000000;
 		}
 		ringBufS_put(L.rx1b, cr1);
 	}
 
-	if (PIR3bits.RC2IF) { // is data from user command/dump terminal port
+	if (PIR3bits.RC2IF) { // is data from network up-link 9n1 port
 		V.c2r_int++;
 		LATDbits.LATD0 = !LATDbits.LATD0; // DEBUG flasher
 		if (RCSTA2bits.OERR) {
@@ -80,7 +92,7 @@ void data_handler(void)
 			RCSTA2bits.CREN = HIGH; // re-enable
 		}
 
-		cr2 = RCREG2; // read from host port2 and clear PIR3bits.RC2IF
+		cr2 = RCREG2; // read from port2 and clear PIR3bits.RC2IF
 		if (RCSTA2bits.RX9D) {
 			cr2 |= 0b100000000;
 		}
@@ -132,19 +144,20 @@ void work_handler(void) // This is the low priority ISR routine, the high ISR ro
  */
 int8_t start_tx1(void)
 {
-	int8_t tx_running = 0;
+	int8_t tx_running = LOW;
 
-	if (PIE1bits.TX1IE) tx_running = 1;
+	if (PIE1bits.TX1IE) tx_running = HIGH;
 	PIE1bits.TX1IE = 1;
 	PIR1bits.TX1IF = 1;
+
 	return tx_running;
 }
 
 int8_t start_tx2(void)
 {
-	int8_t tx_running = 0;
+	int8_t tx_running = LOW;
 
-	if (PIE3bits.TX2IE) tx_running = 1;
+	if (PIE3bits.TX2IE) tx_running = HIGH;
 	PIE3bits.TX2IE = 1;
 	PIR3bits.TX2IF = 1;
 	return tx_running;
