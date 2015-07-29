@@ -2,25 +2,17 @@
 
 void init_display(void)
 {
-	RS = LOW; // send command
+	RS = LOW; // send cmd
 	CSB = LOW; //
-	ringBufS_put(spi_link.tx1b, 0x039);
-	ringBufS_put(spi_link.tx1b, 0x01d);
-	ringBufS_put(spi_link.tx1b, 0x050);
-	ringBufS_put(spi_link.tx1b, 0x06c);
-	ringBufS_put(spi_link.tx1b, 0x07c);
-	ringBufS_put(spi_link.tx1b, 0x038);
-	ringBufS_put(spi_link.tx1b, 0x00f);
-	ringBufS_put(spi_link.tx1b, 0x001);
-	ringBufS_put(spi_link.tx1b, 0x006);
-	start_lcd();
-	while (!ringBufS_empty(spi_link.tx1b));
-
-	ringBufS_put(spi_link.tx1b, 'A');
-	ringBufS_put(spi_link.tx1b, 'O');
-	ringBufS_put(spi_link.tx1b, 'K');
-	RS = HIGH; // send data
-	CSB = LOW; //
+	ringBufS_put(spi_link.tx1b, 0x139);
+	ringBufS_put(spi_link.tx1b, 0x11d);
+	ringBufS_put(spi_link.tx1b, 0x150);
+	ringBufS_put(spi_link.tx1b, 0x16c);
+	ringBufS_put(spi_link.tx1b, 0x176); // contrast last 4 bits
+	ringBufS_put(spi_link.tx1b, 0x138);
+	ringBufS_put(spi_link.tx1b, 0x10f);
+	ringBufS_put(spi_link.tx1b, 0x101);
+	ringBufS_put(spi_link.tx1b, 0x106);
 	start_lcd();
 	while (!ringBufS_empty(spi_link.tx1b));
 }
