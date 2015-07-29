@@ -35,8 +35,8 @@ typedef enum {
 } boolean;
 
 struct spi_link_type { // internal state table
-	uint8_t SPI_DATA : 1;
-	uint8_t REMOTE_LINK : 1;
+	uint8_t SPI_LCD : 1;
+	uint8_t SPI_AUX : 1;
 	uint8_t TIMER : 1;
 	uint8_t DATA : 1;
 	uint16_t delay;

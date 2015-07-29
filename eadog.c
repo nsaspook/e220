@@ -1,9 +1,10 @@
 #include "eadog.h"
 
+/*
+ * Init the EA DOGM163 in 8bit serial mode
+ */
 void init_display(void)
 {
-	RS = LOW; // send cmd
-	CSB = LOW; //
 	ringBufS_put(spi_link.tx1b, 0x139);
 	ringBufS_put(spi_link.tx1b, 0x11d);
 	ringBufS_put(spi_link.tx1b, 0x150);
@@ -17,24 +18,31 @@ void init_display(void)
 	while (!ringBufS_empty(spi_link.tx1b));
 }
 
-void send__lcd_data(uint8_t data, uint8_t config)
+/*
+ * bit 9 is unset for short spi delay (default)
+ */
+void send_lcd_data(uint8_t data)
 {
-	uint16_t symbol;
+	ringBufS_put(spi_link.tx1b, (uint16_t) data);
+}
 
-	symbol = (uint16_t) data + ((uint16_t) config << 8);
+/*
+ * set bit 9 to add long spi delay
+ */
+void send_lcd_cmd(uint8_t cmd)
+{
+	uint16_t symbol = 0;
+
+	symbol = (uint16_t) cmd | 0b100000000;
 	ringBufS_put(spi_link.tx1b, symbol);
 }
 
-void send_lcd_cmd(uint8_t cmd, uint8_t config)
-{
-	uint16_t symbol;
-
-	symbol = (uint16_t) cmd + ((uint16_t) config << 8);
-	ringBufS_put(spi_link.tx1b, symbol);
-}
-
+/*
+ * Trigger the SPI interrupt
+ */
 void start_lcd(void)
 {
-	PIR1bits.SSPIF = 1;
-	PIE1bits.SSPIE = 1;
+	spi_link.SPI_LCD = HIGH;
+	PIR1bits.SSPIF = HIGH;
+	PIE1bits.SSPIE = HIGH;
 }

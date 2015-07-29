@@ -3,6 +3,12 @@
  * LLLT
  *
  * spam@sma2.rain.com   Jul 2015
+ * 
+ * General I/O
+ * button1 int 0 pin 33, led pin 4
+ * button2 int 1 pin 34, led pin 5
+ * Diag led array 8 led D[0..5]
+ * CTMU CTED1 pin 35, CTED2 pin 36
  */
 
 #ifdef P45K80
@@ -154,36 +160,35 @@ void config_pic(void)
 	TRISC = 0x00;
 	TRISD = 0x00;
 	TRISE = 0x00;
-	LATA = 0x00; // all zeros
+	LATA = 0xff;
 	LATB = 0x00;
 	LATC = 0x00;
-	LATD = 0x00;
-	LATE = 0x00;
+	LATD = 0xff;
+	LATE = 0xff;
 
-	INTCON2bits.RBPU = 0; // turn on weak pullups
-	INTCONbits.RBIE = 0; // disable PORTB interrupts
-	INTCONbits.INT0IE = 0; // disable interrupt
-	INTCONbits.INT0IF = 0; // disable interrupt
+	INTCON2bits.RBPU = LOW; // turn on weak pullups
+	INTCONbits.RBIE = LOW; // disable PORTB interrupts
+	INTCONbits.INT0IE = LOW; // disable interrupt
+	INTCONbits.INT0IF = LOW; // disable interrupt
 	INTCONbits.RBIF = LOW; // reset B flag
 	IOCB = 0x00;
 
 	/* SPI pins setup */
-	TRISCbits.TRISC3 = 1; // SCK pins clk in SLAVE
-	TRISCbits.TRISC4 = 1; // SDI
-	TRISCbits.TRISC5 = 0; // SDO
-	TRISAbits.TRISA5 = 1; // SS2
+	TRISCbits.TRISC3 = OUT; // SCK 
+	TRISCbits.TRISC4 = IN; // SDI
+	TRISCbits.TRISC5 = OUT; // SDO
 
 	/* RS-232 #1 TX/RX setup */
-	TRISCbits.TRISC6 = 0; // digital output,TX
-	TRISCbits.TRISC7 = 1; // digital input, RX
+	TRISCbits.TRISC6 = OUT; // digital output,TX
+	TRISCbits.TRISC7 = IN; // digital input, RX
 
 	/* RS-232 #2 TX/RX setup */
-	TRISDbits.TRISD6 = 0; // digital output,TX
-	TRISDbits.TRISD7 = 1; // digital input, RX
+	TRISDbits.TRISD6 = OUT; // digital output,TX
+	TRISDbits.TRISD7 = IN; // digital input, RX
 
 	OpenADC(ADC_FOSC_64 & ADC_RIGHT_JUST & ADC_20_TAD, ADC_CH0 & ADC_INT_ON, ADC_REF_VDD_VSS); // open ADC channel
-	ANCON0 = 0b11101111; // analog bit enables
-	ANCON1 = 0b00000011; // analog bit enables
+	ANCON0 = 0b00000011; // analog bit enables
+	ANCON1 = 0; // analog bit enables
 	ADCON1 = 0b11100000; // ADC voltage ref 2.048 volts, vref- and neg channels to Vss
 
 	SLED = HIGH; // run indicator
@@ -193,7 +198,7 @@ void config_pic(void)
 	PIE1bits.ADIE = LOW; // the ADC interrupt enable bit
 	IPR1bits.ADIP = HIGH; // ADC use high pri
 
-	OpenSPI(SPI_FOSC_64, MODE_00, SMPEND);
+	OpenSPI(SPI_FOSC_64, MODE_00, SMPEND); // 1MHz
 	SSPCON1 |= SPI_FOSC_64; // set clock to low speed
 
 	/*
@@ -247,6 +252,8 @@ void config_pic(void)
 
 	/* clear any SSP error bits */
 	SSPCON1bits.WCOL = SSPCON1bits.SSPOV = LOW;
+	SLED=LOW;
+	
 }
 
 /*
@@ -262,8 +269,8 @@ void main(void)
 	while (1) { // just loop and output results on DIAG LCD
 
 		if (SSPCON1bits.WCOL || SSPCON1bits.SSPOV) { // check for overruns/collisions
-			SSPCON1bits.WCOL = SSPCON1bits.SSPOV = 0;
-			adc_error_count = adc_count - adc_error_count;
+			SSPCON1bits.WCOL = SSPCON1bits.SSPOV = LOW;
+			SLED=HIGH;
 		}
 
 
