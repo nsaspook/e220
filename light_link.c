@@ -295,6 +295,10 @@ void config_pic(void)
 	ANCON1 = 0b00000011; // analog bit enables
 	ADCON1 = 0b11100000; // ADC voltage ref 2.048 volts, vref- and neg channels to Vss
 
+	SLED = HIGH; // run indicator
+	RS = HIGH; // lcd
+	CSB = HIGH; //lcd
+
 #endif
 
 	PIE1bits.ADIE = LOW; // the ADC interrupt enable bit
@@ -361,6 +365,7 @@ void main(void) /* SPI Master/Slave loopback */
 	int16_t i, j, k = 0;
 
 	config_pic(); // setup the slave for work
+	init_display();
 	putrs2USART("\r\r\r\r\r\r\n #### \x1b[7m SPI Slave Ready! \x1b[0m ####\r\n");
 	putrs2USART(" #### \x1b[7m SPI Slave Ready! \x1b[0m ####\r\n");
 
@@ -387,11 +392,22 @@ void main(void) /* SPI Master/Slave loopback */
 		ringBufS_put(L.tx2b, 0b111111111);
 		ringBufS_put(L.tx2b, 0b000000000);
 
+		ringBufS_put(L.tx1b, 0b000000000);
+		ringBufS_put(L.tx1b, 0b111111111);
+		ringBufS_put(L.tx1b, 0b011111111);
+		ringBufS_put(L.tx1b, 0b111111111);
+		ringBufS_put(L.tx1b, 0b011111111);
+		ringBufS_put(L.tx1b, 0b111111111);
+		ringBufS_put(L.tx1b, 0b011111111);
+		ringBufS_put(L.tx1b, 0b111111111);
+		ringBufS_put(L.tx1b, 0b000000000);
+
 		ringBufS_put(spi_link.tx1b, 0b000000000);
 		ringBufS_put(spi_link.tx1b, 0b011111111);
 		ringBufS_put(spi_link.tx1b, 0b101010101);
 		ringBufS_put(spi_link.tx1b, 0b110101010);
 
+		start_tx1();
 		start_tx2();
 		start_lcd();
 		while (!ringBufS_empty(L.tx2b));

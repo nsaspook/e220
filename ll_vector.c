@@ -12,12 +12,13 @@ void data_handler(void)
 	static union Timers timer;
 
 	if (PIE1bits.SSPIE && PIR1bits.SSPIF) { // send data to SPI bus
+		LATDbits.LATD1 = !LATDbits.LATD1;
 		ct1 = SSPBUF; // read to clear the flag
 		if (ringBufS_empty(spi_link.tx1b)) { // buffer has been sent
 			PIE1bits.SSPIE = LOW; // stop data xmit
 		} else {
 			ct1 = ringBufS_get(spi_link.tx1b); // get the 16 bit data
-			spi_link.config = ct1>>8;
+			spi_link.config = ct1 >> 8;
 			SSPBUF = ct1; // send data
 		}
 	}
@@ -89,6 +90,7 @@ void data_handler(void)
 		TMR0H = timer.bt[HIGH]; // Write high byte to Timer0
 		TMR0L = timer.bt[LOW]; // Write low byte to Timer0
 		DLED0 = LOW;
+		SLED = !SLED;
 	}
 
 	if (PIR1bits.ADIF) { // ADC conversion complete flag

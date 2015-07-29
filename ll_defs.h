@@ -44,7 +44,10 @@ extern "C" {
 #define DLED6		LATCbits.LATC1
 #define DLED7		LATCbits.LATC1
 
-
+#define SLED        LATEbits.LATE0
+#define RS          LATEbits.LATE1
+#define CSB         LATEbits.LATE2
+    
 #ifdef	__cplusplus
 }
 #endif

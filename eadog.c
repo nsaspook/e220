@@ -2,7 +2,27 @@
 
 void init_display(void)
 {
+	RS = LOW; // send command
+	CSB = LOW; //
+	ringBufS_put(spi_link.tx1b, 0x039);
+	ringBufS_put(spi_link.tx1b, 0x01d);
+	ringBufS_put(spi_link.tx1b, 0x050);
+	ringBufS_put(spi_link.tx1b, 0x06c);
+	ringBufS_put(spi_link.tx1b, 0x07c);
+	ringBufS_put(spi_link.tx1b, 0x038);
+	ringBufS_put(spi_link.tx1b, 0x00f);
+	ringBufS_put(spi_link.tx1b, 0x001);
+	ringBufS_put(spi_link.tx1b, 0x006);
+	start_lcd();
+	while (!ringBufS_empty(spi_link.tx1b));
 
+	ringBufS_put(spi_link.tx1b, 'A');
+	ringBufS_put(spi_link.tx1b, 'O');
+	ringBufS_put(spi_link.tx1b, 'K');
+	RS = HIGH; // send data
+	CSB = LOW; //
+	start_lcd();
+	while (!ringBufS_empty(spi_link.tx1b));
 }
 
 void send__lcd_data(uint8_t data, uint8_t config)
