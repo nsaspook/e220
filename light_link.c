@@ -1,77 +1,9 @@
 #define P45K80
 /* 
- *
+ * LLLT
  *
  * spam@sma2.rain.com   Jul 2015
  */
-
-
-#ifdef P25K22
-#include <p18f25k22.h>
-// PIC18F25K22 Configuration Bit Settings
-// 'C' source line config statements
-
-// CONFIG1H
-#pragma config FOSC = INTIO67   // Oscillator Selection bits (Internal oscillator block)
-#pragma config PLLCFG = ON      // 4X PLL Enable (Oscillator multiplied by 4)
-#pragma config PRICLKEN = ON    // Primary clock enable bit (Primary clock enabled)
-#pragma config FCMEN = OFF      // Fail-Safe Clock Monitor Enable bit (Fail-Safe Clock Monitor disabled)
-#pragma config IESO = OFF       // Internal/External Oscillator Switchover bit (Oscillator Switchover mode disabled)
-
-// CONFIG2L
-#pragma config PWRTEN = OFF     // Power-up Timer Enable bit (Power up timer disabled)
-#pragma config BOREN = OFF      // Brown-out Reset Enable bits (Brown-out Reset disabled in hardware and software)
-#pragma config BORV = 190       // Brown Out Reset Voltage bits (VBOR set to 1.90 V nominal)
-
-// CONFIG2H
-#pragma config WDTEN = ON       // Watchdog Timer Enable bits (WDT is always enabled. SWDTEN bit has no effect)
-#pragma config WDTPS = 1024     // Watchdog Timer Postscale Select bits (1:1024)
-
-// CONFIG3H
-#pragma config CCP2MX = PORTC1  // CCP2 MUX bit (CCP2 input/output is multiplexed with RC1)
-#pragma config PBADEN = OFF     // PORTB A/D Enable bit (PORTB<5:0> pins are configured as digital I/O on Reset)
-#pragma config CCP3MX = PORTB5  // P3A/CCP3 Mux bit (P3A/CCP3 input/output is multiplexed with RB5)
-#pragma config HFOFST = ON      // HFINTOSC Fast Start-up (HFINTOSC output and ready status are not delayed by the oscillator stable status)
-#pragma config T3CMX = PORTC0   // Timer3 Clock input mux bit (T3CKI is on RC0)
-#pragma config P2BMX = PORTB5   // ECCP2 B output mux bit (P2B is on RB5)
-#pragma config MCLRE = EXTMCLR  // MCLR Pin Enable bit (MCLR pin enabled, RE3 input pin disabled)
-
-// CONFIG4L
-#pragma config STVREN = ON      // Stack Full/Underflow Reset Enable bit (Stack full/underflow will cause Reset)
-#pragma config LVP = OFF        // Single-Supply ICSP Enable bit (Single-Supply ICSP disabled)
-#pragma config XINST = ON       // Extended Instruction Set Enable bit (Instruction set extension and Indexed Addressing mode enabled)
-
-// CONFIG5L
-#pragma config CP0 = OFF        // Code Protection Block 0 (Block 0 (000800-001FFFh) not code-protected)
-#pragma config CP1 = OFF        // Code Protection Block 1 (Block 1 (002000-003FFFh) not code-protected)
-#pragma config CP2 = OFF        // Code Protection Block 2 (Block 2 (004000-005FFFh) not code-protected)
-#pragma config CP3 = OFF        // Code Protection Block 3 (Block 3 (006000-007FFFh) not code-protected)
-
-// CONFIG5H
-#pragma config CPB = OFF        // Boot Block Code Protection bit (Boot block (000000-0007FFh) not code-protected)
-#pragma config CPD = OFF        // Data EEPROM Code Protection bit (Data EEPROM not code-protected)
-
-// CONFIG6L
-#pragma config WRT0 = OFF       // Write Protection Block 0 (Block 0 (000800-001FFFh) not write-protected)
-#pragma config WRT1 = OFF       // Write Protection Block 1 (Block 1 (002000-003FFFh) not write-protected)
-#pragma config WRT2 = OFF       // Write Protection Block 2 (Block 2 (004000-005FFFh) not write-protected)
-#pragma config WRT3 = OFF       // Write Protection Block 3 (Block 3 (006000-007FFFh) not write-protected)
-
-// CONFIG6H
-#pragma config WRTC = OFF       // Configuration Register Write Protection bit (Configuration registers (300000-3000FFh) not write-protected)
-#pragma config WRTB = OFF       // Boot Block Write Protection bit (Boot Block (000000-0007FFh) not write-protected)
-#pragma config WRTD = OFF       // Data EEPROM Write Protection bit (Data EEPROM not write-protected)
-
-// CONFIG7L
-#pragma config EBTR0 = OFF      // Table Read Protection Block 0 (Block 0 (000800-001FFFh) not protected from table reads executed in other blocks)
-#pragma config EBTR1 = OFF      // Table Read Protection Block 1 (Block 1 (002000-003FFFh) not protected from table reads executed in other blocks)
-#pragma config EBTR2 = OFF      // Table Read Protection Block 2 (Block 2 (004000-005FFFh) not protected from table reads executed in other blocks)
-#pragma config EBTR3 = OFF      // Table Read Protection Block 3 (Block 3 (006000-007FFFh) not protected from table reads executed in other blocks)
-
-// CONFIG7H
-#pragma config EBTRB = OFF      // Boot Block Table Read Protection bit (Boot Block (000000-0007FFh) not protected from table reads executed in other blocks)
-
-#endif
 
 #ifdef P45K80
 // PIC18F45K80 Configuration Bit Settings
@@ -214,56 +146,15 @@ void config_pic(void)
 	ringBufS_init(L.tx2b);
 	ringBufS_init(spi_link.tx1b);
 
-#ifdef P25K22
-	OSCCON = 0x70; // internal osc 16mhz, CONFIG OPTION 4XPLL for 64MHZ
-	OSCTUNE = 0xC0; // 4x pll
-	TRISC = 0b11111100; // [0..1] outputs for DIAG leds [2..7] for analog
-	LATC = 0x00; // all LEDS on
-	TRISAbits.TRISA6 = 0; // CPU clock out
-
-	TRISBbits.TRISB1 = 1; // SSP2 pins clk in SLAVE
-	TRISBbits.TRISB2 = 1; // SDI
-	TRISBbits.TRISB3 = 0; // SDO
-	TRISBbits.TRISB0 = 1; // SS2
-
-	/* ADC channels setup */
-	TRISAbits.TRISA0 = HIGH; // an0
-	TRISAbits.TRISA1 = HIGH; // an1
-	TRISAbits.TRISA2 = HIGH; // an2
-	TRISAbits.TRISA3 = HIGH; // an3
-	TRISAbits.TRISA5 = HIGH; // an4
-	TRISBbits.TRISB4 = HIGH; // an11
-	TRISBbits.TRISB0 = HIGH; // an12 SS2, don't use for analog
-	TRISBbits.TRISB5 = HIGH; // an13
-	TRISCbits.TRISC2 = HIGH; // an14
-	TRISCbits.TRISC3 = HIGH; // an15
-	TRISCbits.TRISC4 = HIGH; // an16
-	TRISCbits.TRISC5 = HIGH; // an17
-	TRISCbits.TRISC6 = HIGH; // an17
-	TRISCbits.TRISC7 = HIGH; // an18
-
-	TRISBbits.TRISB4 = 1; // QEI encoder inputs
-	TRISBbits.TRISB5 = 1;
-	TRISBbits.TRISB6 = 1;
-	TRISBbits.TRISB7 = 1;
-
-	ANSELA = 0b00101111; // analog bit enables
-	ANSELB = 0b00110000; // analog bit enables
-	ANSELC = 0b11111100; // analog bit enables
-	VREFCON0 = 0b11100000; // ADC voltage ref 2.048 volts
-	OpenADC(ADC_FOSC_64 & ADC_RIGHT_JUST & ADC_12_TAD, ADC_CH0 & ADC_INT_ON, ADC_REF_FVR_BUF & ADC_REF_VDD_VSS); // open ADC channel
-#endif
-
-#ifdef P45K80
 	OSCCON = 0x70; // internal osc 16mhz, CONFIG OPTION 4XPLL for 64MHZ
 	OSCTUNE = 0b01000000; // 4x pll
 	SLRCON = 0x00; // all slew rates to max
-	TRISA = 0x00;
+	TRISA = 0x00; // all outputs
 	TRISB = 0x00;
 	TRISC = 0x00;
 	TRISD = 0x00;
 	TRISE = 0x00;
-	LATA = 0x00;
+	LATA = 0x00; // all zeros
 	LATB = 0x00;
 	LATC = 0x00;
 	LATD = 0x00;
@@ -298,8 +189,6 @@ void config_pic(void)
 	SLED = HIGH; // run indicator
 	RS = HIGH; // lcd
 	CSB = HIGH; //lcd
-
-#endif
 
 	PIE1bits.ADIE = LOW; // the ADC interrupt enable bit
 	IPR1bits.ADIP = HIGH; // ADC use high pri
@@ -360,16 +249,17 @@ void config_pic(void)
 	SSPCON1bits.WCOL = SSPCON1bits.SSPOV = LOW;
 }
 
-void main(void) /* SPI Master/Slave loopback */
+/*
+ * Light Link Loop Tester
+ */
+void main(void)
 {
 	int16_t i, j, k = 0;
 
-	config_pic(); // setup the slave for work
+	config_pic(); // setup the uC for work
 	init_display();
-	putrs2USART("\r\r\r\r\r\r\n #### \x1b[7m SPI Slave Ready! \x1b[0m ####\r\n");
-	putrs2USART(" #### \x1b[7m SPI Slave Ready! \x1b[0m ####\r\n");
 
-	while (1) { // just loop and output results on DIAG LCD for 8722
+	while (1) { // just loop and output results on DIAG LCD
 
 		if (SSPCON1bits.WCOL || SSPCON1bits.SSPOV) { // check for overruns/collisions
 			SSPCON1bits.WCOL = SSPCON1bits.SSPOV = 0;
