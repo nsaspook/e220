@@ -402,10 +402,12 @@ void main(void) /* SPI Master/Slave loopback */
 		ringBufS_put(L.tx1b, 0b111111111);
 		ringBufS_put(L.tx1b, 0b000000000);
 
-		ringBufS_put(spi_link.tx1b, 0b000000000);
-		ringBufS_put(spi_link.tx1b, 0b011111111);
-		ringBufS_put(spi_link.tx1b, 0b101010101);
-		ringBufS_put(spi_link.tx1b, 0b110101010);
+		RS = HIGH; // send data
+		CSB = LOW;
+		ringBufS_put(spi_link.tx1b, 'F');
+		ringBufS_put(spi_link.tx1b, 'R');
+		ringBufS_put(spi_link.tx1b, 'E');
+		ringBufS_put(spi_link.tx1b, 'D');
 
 		start_tx1();
 		start_tx2();

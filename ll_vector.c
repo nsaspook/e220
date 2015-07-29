@@ -8,18 +8,24 @@
 
 void data_handler(void)
 {
-	static uint16_t channel = 0, cr1, cr2, ct1, ct2;
+	static uint16_t channel = 0, cr1, cr2, ct1, ct2, ct_spi;
 	static union Timers timer;
 
 	if (PIE1bits.SSPIE && PIR1bits.SSPIF) { // send data to SPI bus
+		PIR1bits.SSPIF = LOW;
 		LATDbits.LATD1 = !LATDbits.LATD1;
-		ct1 = SSPBUF; // read to clear the flag
+		ct1 = SSPBUF; // read to clear the BF flag, don't care about the data
 		if (ringBufS_empty(spi_link.tx1b)) { // buffer has been sent
 			PIE1bits.SSPIE = LOW; // stop data xmit
+			spi_link.TIMER = LOW;
 		} else {
-			ct1 = ringBufS_get(spi_link.tx1b); // get the 16 bit data
-			spi_link.config = ct1 >> 8;
-			SSPBUF = ct1; // send data
+			ct_spi = ringBufS_get(spi_link.tx1b); // get the 16 bit data
+			spi_link.config = ct_spi >> 8;
+			spi_link.delay = LCD_SHORT;
+			if (spi_link.config & 0b00000001) spi_link.delay = LCD_LONG;
+			spi_link.TIMER = HIGH;
+			spi_link.DATA = HIGH;
+			INTCONbits.TMR0IF = HIGH; //set interrupt flag
 		}
 	}
 
@@ -82,13 +88,23 @@ void data_handler(void)
 		if (cr2 == 0) LATDbits.LATD0 = 1; // DEBUG flasher
 	}
 
-	if (INTCONbits.TMR0IF) { // check timer0 irq 1 second timer int handler
+	if (INTCONbits.TMR0IF) { // check timer0 irq 1 second timer & SPI delay int handler
+		if (spi_link.TIMER) {
+			spi_link.TIMER = LOW;
+			timer.lt = spi_link.delay; // Copy timer value into union
+			TMR0H = timer.bt[HIGH]; // Write high byte to Timer0
+			TMR0L = timer.bt[LOW]; // Write low byte to Timer0
+		} else {
+			if (spi_link.DATA) {
+				spi_link.DATA = LOW;
+				SSPBUF = ct_spi; // send data
+			}
+			//check for TMR0 overflow
+			timer.lt = TIMEROFFSET; // Copy timer value into union
+			TMR0H = timer.bt[HIGH]; // Write high byte to Timer0
+			TMR0L = timer.bt[LOW]; // Write low byte to Timer0
+		}
 		INTCONbits.TMR0IF = LOW; //clear interrupt flag
-		//check for TMR0 overflow
-
-		timer.lt = TIMEROFFSET; // Copy timer value into union
-		TMR0H = timer.bt[HIGH]; // Write high byte to Timer0
-		TMR0L = timer.bt[LOW]; // Write low byte to Timer0
 		DLED0 = LOW;
 		SLED = !SLED;
 	}
