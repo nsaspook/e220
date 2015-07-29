@@ -13,7 +13,6 @@ void data_handler(void)
 
 	if (PIE1bits.SSPIE && PIR1bits.SSPIF) { // send data to SPI bus
 		PIR1bits.SSPIF = LOW;
-		LATDbits.LATD1 = !LATDbits.LATD1;
 		ct1 = SSPBUF; // read to clear the BF flag, don't care about the data with LCD
 		if (spi_link.SPI_LCD) {
 			if (ringBufS_empty(spi_link.tx1b)) { // buffer has been sent
@@ -48,21 +47,21 @@ void data_handler(void)
 				PIE1bits.TX1IE = LOW; // stop data xmit
 			}
 		} else {
-			ct1 = ringBufS_get(L.tx1b); // get the 9 bit data
-			TXSTA1bits.TX9D = (ct1 & 0b100000000) ? 1 : 0;
+			ct1 = ringBufS_get(L.tx1b); // get the 9 bit data from 16 bit data buffer
+			TXSTA1bits.TX9D = (ct1 & 0b100000000) ? HIGH : LOW;
 			TXREG1 = ct1; // send data and clear FLAG
 			V.c1t_int++;
 		}
 	}
 
 	if (PIE3bits.TX2IE && PIR3bits.TX2IF) {
-		if (ringBufS_empty(L.tx2b)) { 
+		if (ringBufS_empty(L.tx2b)) {
 			if (TXSTA2bits.TRMT) {
 				PIE3bits.TX2IE = LOW;
 			}
 		} else {
 			ct2 = ringBufS_get(L.tx2b);
-			TXSTA2bits.TX9D = (ct2 & 0b100000000) ? 1 : 0;
+			TXSTA2bits.TX9D = (ct2 & 0b100000000) ? HIGH : LOW;
 			TXREG2 = ct2;
 			V.c2t_int++;
 		}
@@ -70,10 +69,13 @@ void data_handler(void)
 
 	if (PIR1bits.RC1IF) { // is data from network down-link 9n1 port
 		V.c1r_int++; // total count
+		DLED0 = !DLED0; // link flasher
 		if (RCSTA1bits.OERR) {
 			RCSTA1bits.CREN = LOW; // clear overrun
 			RCSTA1bits.CREN = HIGH; // re-enable
+			SLED = HIGH;
 		}
+		if (RCSTA1bits.FERR) SLED = HIGH;
 
 		/* clear com1 interrupt flag */
 		// a read clears the flag
@@ -82,22 +84,25 @@ void data_handler(void)
 			cr1 |= 0b100000000;
 		}
 		ringBufS_put(L.rx1b, cr1);
+		if (cr1 == 0) DLED0 = S_OFF; // DEBUG flasher
 	}
 
 	if (PIR3bits.RC2IF) { // is data from network up-link 9n1 port
 		V.c2r_int++;
-		LATDbits.LATD0 = !LATDbits.LATD0; // DEBUG flasher
+		DLED1 = !DLED1; // link flasher
 		if (RCSTA2bits.OERR) {
 			RCSTA2bits.CREN = LOW; //      clear overrun
 			RCSTA2bits.CREN = HIGH; // re-enable
+			SLED = HIGH;
 		}
+		if (RCSTA2bits.FERR) SLED = HIGH;
 
 		cr2 = RCREG2; // read from port2 and clear PIR3bits.RC2IF
 		if (RCSTA2bits.RX9D) {
 			cr2 |= 0b100000000;
 		}
 		ringBufS_put(L.rx2b, cr2);
-		if (cr2 == 0) LATDbits.LATD0 = 1; // DEBUG flasher
+		if (cr2 == 0) DLED1 = S_OFF; // DEBUG flasher
 	}
 
 	if (INTCONbits.TMR0IF) { // check timer0 irq 1 second timer & SPI delay int handler
@@ -117,15 +122,14 @@ void data_handler(void)
 			TMR0L = timer.bt[LOW]; // Write low byte to Timer0
 		}
 		INTCONbits.TMR0IF = LOW; //clear interrupt flag
-		DLED0 = LOW;
-		SLED = !SLED;
+		DLED2 = !DLED2;
 	}
 
 	if (PIR1bits.ADIF) { // ADC conversion complete flag
 		PIR1bits.ADIF = LOW;
 		adc_count++; // just keep count
 		adc_buffer[channel] = ADRES;
-		DLED1 = !DLED1;
+		//		DLED6 = !DLED6;
 	}
 }
 #pragma	tmpdata
@@ -139,17 +143,16 @@ void work_handler(void) // This is the low priority ISR routine, the high ISR ro
 #pragma	tmpdata
 
 /* 
- * start the tx usart running 
- * return TRUE is it's already enabled
+ * start the tx usart running from user context
+ * return TRUE if it's already enabled
  */
 int8_t start_tx1(void)
 {
 	int8_t tx_running = LOW;
 
 	if (PIE1bits.TX1IE) tx_running = HIGH;
-	PIE1bits.TX1IE = 1;
-	PIR1bits.TX1IF = 1;
-
+	PIE1bits.TX1IE = HIGH;
+	PIR1bits.TX1IF = HIGH;
 	return tx_running;
 }
 
@@ -158,7 +161,7 @@ int8_t start_tx2(void)
 	int8_t tx_running = LOW;
 
 	if (PIE3bits.TX2IE) tx_running = HIGH;
-	PIE3bits.TX2IE = 1;
-	PIR3bits.TX2IF = 1;
+	PIE3bits.TX2IE = HIGH;
+	PIR3bits.TX2IF = HIGH;
 	return tx_running;
 }
