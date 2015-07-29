@@ -19,7 +19,7 @@ extern "C" {
 #define BAUD_SLOW	0
 	
 #define LCD_SHORT	0xfffe
-#define LCD_LONG	0xffb0
+#define LCD_LONG	0xff80
 	
 #define	TIMEROFFSET	26474           // timer0 16bit counter value for 1 second to overflow
 #define SLAVE_ACTIVE	10		// Activity counter level
