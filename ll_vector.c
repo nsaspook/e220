@@ -10,7 +10,8 @@ void data_handler(void)
 {
 	static uint16_t channel = 0, cr1, cr2, ct1, ct2, ct_spi;
 	static union Timers timer;
-
+	
+	DLED7=LOW;
 	if (PIE1bits.SSPIE && PIR1bits.SSPIF) { // send data to SPI bus
 		PIR1bits.SSPIF = LOW;
 		ct1 = SSPBUF; // read to clear the BF flag, don't care about the data with LCD
@@ -131,6 +132,7 @@ void data_handler(void)
 		adc_buffer[channel] = ADRES;
 		DLED2 = !DLED2;
 	}
+	DLED7=HIGH;
 }
 #pragma	tmpdata
 
