@@ -107,9 +107,9 @@ volatile uint16_t adc_buffer[64] = {0}, adc_data_in = 0;
 volatile struct V_data V;
 volatile struct llflagtype ll_flag, ll_dumpflag;
 volatile int16_t tx_tmp = 0, rx_tmp = 0;
-#pragma udata gpr2
-volatile struct L_data L;
 #pragma udata gpr9
+volatile struct L_data L;
+//#pragma udata gpr9
 
 //High priority interrupt vector, placed at address HIGH_VECTOR
 #pragma code data_interrupt = HIGH_VECTOR

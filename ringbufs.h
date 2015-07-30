@@ -1,6 +1,6 @@
 /* 
  * File:   ringbufs.h
- * Author: root
+ * Author: rootswitcDC circuit breakerh debounce icdebounce icfuse type T
  *
  * Created on July 25, 2015, 2:03 PM
  */
