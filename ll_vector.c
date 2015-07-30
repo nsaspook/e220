@@ -81,7 +81,7 @@ void data_handler(void)
 		// a read clears the flag
 		cr1 = RCREG1; // read from port1 and clear PIR1bits.RC1IF
 		if (RCSTA1bits.RX9D) {
-			cr1 |= 0b100000000;
+			cr1 |= 0b100000000; // OR bit 9 for data buffer
 		}
 		ringBufS_put(L.rx1b, cr1);
 		if (cr1 == 0) DLED0 = S_OFF; // DEBUG flasher
@@ -122,14 +122,14 @@ void data_handler(void)
 			TMR0L = timer.bt[LOW]; // Write low byte to Timer0
 		}
 		INTCONbits.TMR0IF = LOW; //clear interrupt flag
-		DLED2 = !DLED2;
+		DLED6 = !DLED6;
 	}
 
 	if (PIR1bits.ADIF) { // ADC conversion complete flag
 		PIR1bits.ADIF = LOW;
 		adc_count++; // just keep count
 		adc_buffer[channel] = ADRES;
-		//		DLED6 = !DLED6;
+		DLED2 = !DLED2;
 	}
 }
 #pragma	tmpdata
