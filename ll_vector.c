@@ -15,6 +15,10 @@ void data_handler(void)
 	if (PIE1bits.SSPIE && PIR1bits.SSPIF) { // send data to SPI bus
 		PIR1bits.SSPIF = LOW;
 		ct1 = SSPBUF; // read to clear the BF flag, don't care about the data with LCD
+		/*
+		 * the SPI data is not sent here, it's scheduled by timer0
+		 * with about 69us for the whole process with LCD data byte to next byte
+		 */
 		if (spi_link.SPI_LCD) {
 			if (ringBufS_empty(spi_link.tx1b)) { // buffer has been sent
 				PIE1bits.SSPIE = LOW; // stop data xmit
@@ -32,6 +36,9 @@ void data_handler(void)
 					RS = HIGH; // send data
 				}
 				CSB = LOW; // select the display
+				/*
+				 * setup timer0 for SPI delay and buffer write
+				 */
 				spi_link.TIMER = HIGH;
 				spi_link.DATA = HIGH;
 				INTCONbits.TMR0IF = HIGH; //set interrupt flag
@@ -106,14 +113,25 @@ void data_handler(void)
 		if (cr2 == 0) DLED1 = S_OFF; // DEBUG flasher
 	}
 
+	/*
+	 * This is a little tricky, it normally runs at a very slow speed for a system heartbeat
+	 * but it also times a delay for SPI data to a LCD display for data and commands
+	 * ~36us for data and ~2ms for commands set in spi_link.delay
+	 */
 	if (INTCONbits.TMR0IF) { // check timer0 irq 1 second timer & SPI delay int handler
 		DLED3 = !DLED3;
 		if (spi_link.TIMER) {
 			spi_link.TIMER = LOW;
+			/*
+			 * set the SPI delay first then send the buffer at the next timer0 interrupt
+			 */
 			timer.lt = spi_link.delay; // Copy timer value into union
 			TMR0H = timer.bt[HIGH]; // Write high byte to Timer0
 			TMR0L = timer.bt[LOW]; // Write low byte to Timer0
 		} else {
+			/*
+			 * send the SPI data then reset timer0 for normal speed
+			 */
 			if (spi_link.DATA) {
 				spi_link.DATA = LOW;
 				DLED6 = !DLED6;
