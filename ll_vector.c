@@ -92,6 +92,20 @@ void data_handler(void)
 		if (RCSTA1bits.RX9D) {
 			cr1 |= 0b100000000; // OR bit 9 for data buffer
 		}
+
+		switch (L.omode) {
+		case LL_E220:
+			TXSTA2bits.TX9D = RCSTA1bits.RX9D;
+			TXREG2 = cr1;
+			break;
+		case LL_LOOP:
+			TXSTA1bits.TX9D = RCSTA1bits.RX9D;
+			TXREG1 = cr1;
+			break;
+		default:
+			break;
+		}
+
 		ringBufS_put(L.rx1b, cr1);
 		if (cr1 == 0) DLED0 = S_OFF; // DEBUG flasher
 	}
@@ -110,6 +124,20 @@ void data_handler(void)
 		if (RCSTA2bits.RX9D) {
 			cr2 |= 0b100000000;
 		}
+
+		switch (L.omode) {
+		case LL_E220:
+			TXSTA1bits.TX9D = RCSTA2bits.RX9D;
+			TXREG1 = cr2;
+			break;
+		case LL_LOOP:
+			TXSTA2bits.TX9D = RCSTA2bits.RX9D;
+			TXREG2 = cr2;
+			break;
+		default:
+			break;
+		}
+
 		ringBufS_put(L.rx2b, cr2);
 		if (cr2 == 0) DLED1 = S_OFF; // DEBUG flasher
 	}
