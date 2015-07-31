@@ -10,8 +10,8 @@ void data_handler(void)
 {
 	static uint16_t channel = 0, cr1, cr2, ct1, ct2, ct_spi;
 	static union Timers timer;
-	
-	DLED7=LOW;
+
+	DLED7 = LOW;
 	if (PIE1bits.SSPIE && PIR1bits.SSPIF) { // send data to SPI bus
 		PIR1bits.SSPIF = LOW;
 		ct1 = SSPBUF; // read to clear the BF flag, don't care about the data with LCD
@@ -69,8 +69,8 @@ void data_handler(void)
 	}
 
 	if (PIR1bits.RC1IF) { // is data from network down-link 9n1 port
-		V.c1r_int++; // total count
 		DLED0 = !DLED0; // link flasher
+		V.c1r_int++; // total count
 		if (RCSTA1bits.OERR) {
 			RCSTA1bits.CREN = LOW; // clear overrun
 			RCSTA1bits.CREN = HIGH; // re-enable
@@ -89,8 +89,8 @@ void data_handler(void)
 	}
 
 	if (PIR3bits.RC2IF) { // is data from network up-link 9n1 port
-		V.c2r_int++;
 		DLED1 = !DLED1; // link flasher
+		V.c2r_int++;
 		if (RCSTA2bits.OERR) {
 			RCSTA2bits.CREN = LOW; //      clear overrun
 			RCSTA2bits.CREN = HIGH; // re-enable
@@ -107,6 +107,7 @@ void data_handler(void)
 	}
 
 	if (INTCONbits.TMR0IF) { // check timer0 irq 1 second timer & SPI delay int handler
+		DLED3 = !DLED3;
 		if (spi_link.TIMER) {
 			spi_link.TIMER = LOW;
 			timer.lt = spi_link.delay; // Copy timer value into union
@@ -115,6 +116,7 @@ void data_handler(void)
 		} else {
 			if (spi_link.DATA) {
 				spi_link.DATA = LOW;
+				DLED6 = !DLED6;
 				SSPBUF = ct_spi; // send data
 			}
 			//check for TMR0 overflow
@@ -123,16 +125,15 @@ void data_handler(void)
 			TMR0L = timer.bt[LOW]; // Write low byte to Timer0
 		}
 		INTCONbits.TMR0IF = LOW; //clear interrupt flag
-		DLED6 = !DLED6;
 	}
 
 	if (PIR1bits.ADIF) { // ADC conversion complete flag
+		DLED2 = !DLED2;
 		PIR1bits.ADIF = LOW;
 		adc_count++; // just keep count
 		adc_buffer[channel] = ADRES;
-		DLED2 = !DLED2;
 	}
-	DLED7=HIGH;
+	DLED7 = HIGH;
 }
 #pragma	tmpdata
 
