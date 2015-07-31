@@ -17,10 +17,11 @@ void data_handler(void)
 		ct1 = SSPBUF; // read to clear the BF flag, don't care about the data with LCD
 		/*
 		 * the SPI data is not sent here, it's scheduled by timer0
-		 * with about 69us for the whole process with LCD data byte to next byte
+		 * with about 66us for the whole process with LCD data byte to next byte
+		 * and 18.5us overhead for this
 		 */
 		if (spi_link.SPI_LCD) {
-			if (ringBufS_empty(spi_link.tx1b)) { // buffer has been sent
+			if (spi_link.tx1b->count == 0) { // buffer has been sent, 3.6us overhead
 				PIE1bits.SSPIE = LOW; // stop data xmit
 				spi_link.TIMER = LOW;
 				CSB = HIGH; // deselect the display
@@ -50,7 +51,7 @@ void data_handler(void)
 	}
 
 	if (PIE1bits.TX1IE && PIR1bits.TX1IF) { // send data to USART
-		if (ringBufS_empty(L.tx1b)) { // buffer has been sent
+		if (L.tx1b->count == 0) { // buffer has been sent
 			if (TXSTA1bits.TRMT) { // last bit has been shifted out
 				PIE1bits.TX1IE = LOW; // stop data xmit
 			}
@@ -63,7 +64,7 @@ void data_handler(void)
 	}
 
 	if (PIE3bits.TX2IE && PIR3bits.TX2IF) {
-		if (ringBufS_empty(L.tx2b)) {
+		if (L.tx2b->count == 0) {
 			if (TXSTA2bits.TRMT) {
 				PIE3bits.TX2IE = LOW;
 			}
@@ -117,6 +118,7 @@ void data_handler(void)
 	 * This is a little tricky, it normally runs at a very slow speed for a system heartbeat
 	 * but it also times a delay for SPI data to a LCD display for data and commands
 	 * ~36us for data and ~2ms for commands set in spi_link.delay
+	 * and 3.2us overhead for this
 	 */
 	if (INTCONbits.TMR0IF) { // check timer0 irq 1 second timer & SPI delay int handler
 		DLED3 = !DLED3;
@@ -131,6 +133,7 @@ void data_handler(void)
 		} else {
 			/*
 			 * send the SPI data then reset timer0 for normal speed
+			 * xmit time per byte 11us
 			 */
 			if (spi_link.DATA) {
 				spi_link.DATA = LOW;
