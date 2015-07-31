@@ -15,7 +15,7 @@ extern "C" {
 #define LOW_VECTOR      0x18            // ISR low address
 #define HIGH_VECTOR     0x8             // ISR high address
 
-#define BAUD_FAST		2 // 375000 BPS is 41
+#define BAUD_FAST		41 // 375000 BPS is 41, high speed testing is 2
 #define BAUD_SLOW		0
 
 #define LCD_SHORT		0xfffe

@@ -93,7 +93,7 @@ ${OBJECTDIR}/light_link.o: light_link.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/light_link.o.d 
 	@${RM} ${OBJECTDIR}/light_link.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -p$(MP_PROCESSOR_OPTION) -ml --extended -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/light_link.o   light_link.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -p$(MP_PROCESSOR_OPTION) --verbose -ml --extended -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/light_link.o   light_link.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/light_link.o 
 	@${FIXDEPS} "${OBJECTDIR}/light_link.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
@@ -101,7 +101,7 @@ ${OBJECTDIR}/ll_vector.o: ll_vector.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/ll_vector.o.d 
 	@${RM} ${OBJECTDIR}/ll_vector.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -p$(MP_PROCESSOR_OPTION) -ml --extended -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/ll_vector.o   ll_vector.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -p$(MP_PROCESSOR_OPTION) --verbose -ml --extended -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/ll_vector.o   ll_vector.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/ll_vector.o 
 	@${FIXDEPS} "${OBJECTDIR}/ll_vector.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
@@ -109,7 +109,7 @@ ${OBJECTDIR}/ringbufs.o: ringbufs.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/ringbufs.o.d 
 	@${RM} ${OBJECTDIR}/ringbufs.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -p$(MP_PROCESSOR_OPTION) -ml --extended -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/ringbufs.o   ringbufs.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -p$(MP_PROCESSOR_OPTION) --verbose -ml --extended -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/ringbufs.o   ringbufs.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/ringbufs.o 
 	@${FIXDEPS} "${OBJECTDIR}/ringbufs.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
@@ -117,7 +117,7 @@ ${OBJECTDIR}/eadog.o: eadog.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/eadog.o.d 
 	@${RM} ${OBJECTDIR}/eadog.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -p$(MP_PROCESSOR_OPTION) -ml --extended -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/eadog.o   eadog.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -D__DEBUG -D__MPLAB_DEBUGGER_ICD3=1 -p$(MP_PROCESSOR_OPTION) --verbose -ml --extended -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/eadog.o   eadog.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/eadog.o 
 	@${FIXDEPS} "${OBJECTDIR}/eadog.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
@@ -126,7 +126,7 @@ ${OBJECTDIR}/light_link.o: light_link.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/light_link.o.d 
 	@${RM} ${OBJECTDIR}/light_link.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ml --extended -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/light_link.o   light_link.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) --verbose -ml --extended -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/light_link.o   light_link.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/light_link.o 
 	@${FIXDEPS} "${OBJECTDIR}/light_link.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
@@ -134,7 +134,7 @@ ${OBJECTDIR}/ll_vector.o: ll_vector.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/ll_vector.o.d 
 	@${RM} ${OBJECTDIR}/ll_vector.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ml --extended -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/ll_vector.o   ll_vector.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) --verbose -ml --extended -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/ll_vector.o   ll_vector.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/ll_vector.o 
 	@${FIXDEPS} "${OBJECTDIR}/ll_vector.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
@@ -142,7 +142,7 @@ ${OBJECTDIR}/ringbufs.o: ringbufs.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/ringbufs.o.d 
 	@${RM} ${OBJECTDIR}/ringbufs.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ml --extended -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/ringbufs.o   ringbufs.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) --verbose -ml --extended -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/ringbufs.o   ringbufs.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/ringbufs.o 
 	@${FIXDEPS} "${OBJECTDIR}/ringbufs.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	
@@ -150,7 +150,7 @@ ${OBJECTDIR}/eadog.o: eadog.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/eadog.o.d 
 	@${RM} ${OBJECTDIR}/eadog.o 
-	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) -ml --extended -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/eadog.o   eadog.c 
+	${MP_CC} $(MP_EXTRA_CC_PRE) -p$(MP_PROCESSOR_OPTION) --verbose -ml --extended -I ${MP_CC_DIR}/../h  -fo ${OBJECTDIR}/eadog.o   eadog.c 
 	@${DEP_GEN} -d ${OBJECTDIR}/eadog.o 
 	@${FIXDEPS} "${OBJECTDIR}/eadog.o.d" $(SILENT) -rsi ${MP_CC_DIR}../ -c18 
 	

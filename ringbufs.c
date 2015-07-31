@@ -44,7 +44,7 @@ int8_t ringBufS_full(ringBufS_t *_this)
 
 uint16_t ringBufS_get(ringBufS_t *_this)
 {
-	int c;
+	uint16_t c;
 	if (_this->count > 0) {
 		c = _this->buf[_this->tail];
 		_this->tail = modulo_inc(_this->tail, RBUF_SIZE);
