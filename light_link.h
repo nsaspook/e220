@@ -32,7 +32,15 @@ typedef signed long long int64_t;
 
 typedef enum {
 	false = 0, true = 1
-} boolean;
+} boolean_t;
+
+typedef enum {
+    LL_OPEN, LL_LOOP, LL_E220, LL_VISION, LL_GSD, LL_VISTA
+} mode_t;
+
+typedef enum {
+    RS232_HH, RS232_LL
+} level_t;
 
 struct spi_link_type { // internal state table
 	uint8_t SPI_LCD : 1;
@@ -59,6 +67,8 @@ typedef struct V_data { // OS Counters
 typedef struct L_data { // light link state data
 	uint8_t tx1_dac, tx2_dac;
 	struct ringBufS_t *rx1b, *tx1b, *rx2b, *tx2b, ring_buf1, ring_buf2, ring_buf3, ring_buf4;
+	mode_t omode;
+	level_t rs232_mode;
 } L_data;
 
 typedef struct llflagtype {

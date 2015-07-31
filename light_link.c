@@ -107,9 +107,9 @@ volatile uint16_t adc_buffer[64] = {0}, adc_data_in = 0;
 volatile struct V_data V;
 volatile struct llflagtype ll_flag, ll_dumpflag;
 volatile int16_t tx_tmp = 0, rx_tmp = 0;
-#pragma udata gpr9
+#pragma udata gpr2
 volatile struct L_data L;
-//#pragma udata gpr9
+#pragma udata gpr9
 
 //High priority interrupt vector, placed at address HIGH_VECTOR
 #pragma code data_interrupt = HIGH_VECTOR
@@ -140,6 +140,12 @@ void wdtdelay(unsigned long delay)
 
 void config_pic(void)
 {
+	/*
+	 * default operation mode
+	 */
+	L.rs232_mode = RS232_LL;
+	L.omode = LL_E220;
+	
 	/* setup the link buffers first */
 	L.rx1b = &L.ring_buf1;
 	L.tx1b = &L.ring_buf2;
@@ -230,6 +236,11 @@ void config_pic(void)
 	SPBRGH2 = BAUD_SLOW;
 	SPBRG2 = BAUD_FAST;
 
+	if (L.rs232_mode == RS232_LL) {
+		BAUDCON1 |= 0b00110000;
+		BAUDCON2 |= 0b00110000;
+	}
+
 	while (DataRdy1USART()) { // dump 1 rx data`
 		Read1USART();
 	};
@@ -252,8 +263,8 @@ void config_pic(void)
 
 	/* clear any SSP error bits */
 	SSPCON1bits.WCOL = SSPCON1bits.SSPOV = LOW;
-	SLED=LOW;
-	
+	SLED = LOW;
+
 }
 
 /*
@@ -270,7 +281,7 @@ void main(void)
 
 		if (SSPCON1bits.WCOL || SSPCON1bits.SSPOV) { // check for overruns/collisions
 			SSPCON1bits.WCOL = SSPCON1bits.SSPOV = LOW;
-			SLED=HIGH;
+			SLED = HIGH;
 		}
 
 
@@ -305,9 +316,9 @@ void main(void)
 		send_lcd_data('D');
 
 		start_tx1();
-		start_tx2();
+		//		start_tx2();
 		start_lcd();
-		while (!ringBufS_empty(L.tx2b));
+		while (!ringBufS_empty(L.tx1b));
 		while (!ringBufS_empty(spi_link.tx1b));
 	}
 
