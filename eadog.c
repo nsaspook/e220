@@ -1,17 +1,6 @@
 #include "eadog.h"
 #include <stdio.h>
-
-#define EADOGM_CMD_CLR 1
-#define EADOGM_CMD_CURSOR_ON     0b00001111
-#define EADOGM_CMD_CURSOR_OFF    0b00001100
-#define EADOGM_CMD_DISPLAY_ON    0b00001100
-#define EADOGM_CMD_DISPLAY_OFF   0b00001000
-#define EADOGM_CMD_DDRAM_ADDR    0b10000000
-#define EADOGM_CMD_CGRAM_ADDR    0b01000000
-#define EADOGM_CMD_SELECT_R0     0b00011000
-#define EADOGM_CMD_SELECT_R1     0b00010000
-#define EADOGM_CMD_SET_TABLE2    0b00101010
-#define EADOGM_COLSPAN 16
+#include <string.h>
 
 #define eaDogM_Cls()             eaDogM_WriteCommand(EADOGM_CMD_CLR)
 #define eaDogM_CursorOn()        eaDogM_WriteCommand(EADOGM_CMD_CURSOR_ON)
@@ -33,6 +22,7 @@ void init_display(void)
 	ringBufS_put(spi_link.tx1b, 0x138);
 	ringBufS_put(spi_link.tx1b, 0x10f);
 	ringBufS_put(spi_link.tx1b, 0x101);
+	ringBufS_put(spi_link.tx1b, 0x102);
 	ringBufS_put(spi_link.tx1b, 0x106);
 	start_lcd();
 	while (!ringBufS_empty(spi_link.tx1b));
@@ -67,6 +57,11 @@ void start_lcd(void)
 	PIE1bits.SSPIE = HIGH;
 }
 
+void wait_lcd(void)
+{
+	while (!ringBufS_empty(spi_link.tx1b));
+}
+
 /*
  * 
  *            file: EA-DOGM_MIO.c
@@ -82,17 +77,19 @@ void eaDogM_WriteChr(char value)
 {
 	send_lcd_data(value);
 	start_lcd();
+	wait_lcd();
 }
 
 int _user_putc(char c)
 {
-	eaDogM_WriteChr(c);
+	send_lcd_data(c);
 }
 
 void eaDogM_WriteCommand(uint8_t cmd)
 {
 	send_lcd_cmd(cmd);
 	start_lcd();
+	wait_lcd();
 }
 
 void eaDogM_SetPos(uint8_t r, uint8_t c)
@@ -113,13 +110,19 @@ void eaDogM_ClearRow(uint8_t r)
 
 void eaDogM_WriteString(char *strPtr)
 {
+	if (strlen(strPtr) >= 16) strPtr[16] = 0;
 	printf("%s", strPtr);
+	start_lcd();
+	wait_lcd();
 }
 
 void eaDogM_WriteStringAtPos(uint8_t r, uint8_t c, char *strPtr)
 {
 	eaDogM_WriteCommand((EADOGM_CMD_DDRAM_ADDR + (r * EADOGM_COLSPAN) + c));
+	if (strlen(strPtr) >= 16) strPtr[16] = 0;
 	printf("%s", strPtr);
+	start_lcd();
+	wait_lcd();
 }
 
 void eaDogM_WriteIntAtPos(uint8_t r, uint8_t c, uint8_t i)

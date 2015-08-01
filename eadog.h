@@ -15,12 +15,22 @@ extern "C" {
 #include <spi.h>
 #include "light_link.h"
 
-    extern volatile struct spi_link_type spi_link;
+	extern volatile struct spi_link_type spi_link;
 
-    void init_display(void);
-    void send_lcd_data(uint8_t);
-    void send_lcd_cmd(uint8_t);
-    void start_lcd(void);
+	void init_display(void);
+	void send_lcd_data(uint8_t);
+	void send_lcd_cmd(uint8_t);
+	void start_lcd(void);
+	void wait_lcd(void);
+
+	void eaDogM_WriteChr(char);
+	void eaDogM_WriteCommand(uint8_t);
+	void eaDogM_SetPos(uint8_t, uint8_t);
+	void eaDogM_ClearRow(uint8_t);
+	void eaDogM_WriteString(char *);
+	void eaDogM_WriteStringAtPos(uint8_t, uint8_t, char *);
+	void eaDogM_WriteIntAtPos(uint8_t, uint8_t, uint8_t);
+	void eaDogM_WriteByteToCGRAM(uint8_t, uint8_t);
 
 #ifdef	__cplusplus
 }

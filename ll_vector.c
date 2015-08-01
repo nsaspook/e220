@@ -24,19 +24,23 @@ void data_handler(void)
 			if (spi_link.tx1b->count == 0) { // buffer has been sent, 3.6us overhead
 				PIE1bits.SSPIE = LOW; // stop data xmit
 				spi_link.TIMER = LOW;
-				CSB = HIGH; // deselect the display
+				if (spi_link.DATA) INTCONbits.TMR0IF = HIGH; //set interrupt flag
 			} else {
 				ct_spi = ringBufS_get(spi_link.tx1b); // get the 16 bit data
 				spi_link.config = ct_spi >> 8;
 
-				if (spi_link.config & 0b00000001) {
-					spi_link.delay = LCD_LONG;
+				if (spi_link.config & 0b00000001) { // check for clear and home commands
+					if (((ct_spi & 0b11111111) == 0b00000001) || ((ct_spi & 0b11111110) == 0b00000010)) {
+						spi_link.delay = LCD_LONG;
+					} else {
+						spi_link.delay = LCD_SHORT;
+					}
 					RS = LOW; // send cmd
 				} else {
 					spi_link.delay = LCD_SHORT;
 					RS = HIGH; // send data
 				}
-				CSB = LOW; // select the display
+				CSB = LOW; // select the display SPI receiver
 				/*
 				 * setup timer0 for SPI delay and buffer write
 				 */
