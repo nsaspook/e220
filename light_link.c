@@ -94,8 +94,15 @@
 #include "ringbufs.h"
 #include "eadog.h"
 
+#define eaDogM_Cls()             eaDogM_WriteCommand(EADOGM_CMD_CLR)
+#define eaDogM_CursorOn()        eaDogM_WriteCommand(EADOGM_CMD_CURSOR_ON)
+#define eaDogM_CursorOff()       eaDogM_WriteCommand(EADOGM_CMD_CURSOR_OFF)
+#define eaDogM_DisplayOn()       eaDogM_WriteCommand(EADOGM_CMD_DISPLAY_ON)
+#define eaDogM_DisplayOff()      eaDogM_WriteCommand(EADOGM_CMD_DISPLAY_OFF)
+
 volatile struct spi_link_type spi_link;
 
+const rom char *screen_data = " Light Link Box ";
 const rom int8_t *build_date = __DATE__, *build_time = __TIME__;
 volatile uint8_t data_in2, adc_buffer_ptr = 0,
 	adc_channel = 0;
@@ -145,7 +152,7 @@ void config_pic(void)
 	 */
 	L.rs232_mode = RS232_LL;
 	L.omode = LL_E220;
-	
+
 	/* setup the link buffers first */
 	L.rx1b = &L.ring_buf1;
 	L.tx1b = &L.ring_buf2;
@@ -273,9 +280,20 @@ void config_pic(void)
 void main(void)
 {
 	int16_t i, j, k = 0;
+	char bootstr2[32];
 
 	config_pic(); // setup the uC for work
 	init_display();
+
+	eaDogM_Cls();
+	strncpypgm2ram(bootstr2, screen_data, 16);
+	eaDogM_WriteString(bootstr2);
+	eaDogM_SetPos(1, 0);
+	strncpypgm2ram(bootstr2, build_time, 16);
+	eaDogM_WriteString(bootstr2);
+//	eaDogM_SetPos(2, 0);
+	strncpypgm2ram(bootstr2, build_date, 16);
+	eaDogM_WriteString(bootstr2);
 
 	while (1) { // just loop and output results on DIAG LCD
 
@@ -310,16 +328,12 @@ void main(void)
 		ringBufS_put(L.tx1b, 0b111111111);
 		ringBufS_put(L.tx1b, 0b000000000);
 
-		send_lcd_data('F');
-		send_lcd_data('R');
-		send_lcd_data('E');
-		send_lcd_data('D');
 
 		start_tx1();
 		//		start_tx2();
-		start_lcd();
+		//		eaDogM_WriteStringAtPos(1,8,screen_data);
+
 		while (!ringBufS_empty(L.tx1b));
-		while (!ringBufS_empty(spi_link.tx1b));
 	}
 
 }
