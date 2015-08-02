@@ -153,7 +153,7 @@ void data_handler(void)
 	 * and 3.2us overhead for this
 	 */
 	if (INTCONbits.TMR0IF) { // check timer0 irq 1 second timer & SPI delay int handler
-		DLED3 = !DLED3;
+		DLED3 = S_ON;
 		if (spi_link.TIMER) {
 			spi_link.TIMER = LOW;
 			/*
@@ -178,6 +178,7 @@ void data_handler(void)
 			TMR0L = timer.bt[LOW]; // Write low byte to Timer0
 		}
 		INTCONbits.TMR0IF = LOW; //clear interrupt flag
+		DLED3=S_OFF;
 	}
 
 	if (PIR1bits.ADIF) { // ADC conversion complete flag
