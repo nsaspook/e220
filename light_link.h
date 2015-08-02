@@ -30,9 +30,6 @@ typedef signed long long int64_t;
 #include "ll_defs.h"
 #include  "ringbufs.h"
 
-typedef enum {
-	false = 0, true = 1
-} boolean_t;
 
 typedef enum {
     LL_OPEN, LL_LOOP, LL_E220, LL_VISION, LL_GSD, LL_VISTA

@@ -178,7 +178,7 @@ void data_handler(void)
 			TMR0L = timer.bt[LOW]; // Write low byte to Timer0
 		}
 		INTCONbits.TMR0IF = LOW; //clear interrupt flag
-		DLED3=S_OFF;
+		DLED3 = S_OFF;
 	}
 
 	if (PIR1bits.ADIF) { // ADC conversion complete flag
