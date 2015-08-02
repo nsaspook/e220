@@ -30,6 +30,16 @@
  * 7 dled6
  * 8 dled7
  * 9 gnd
+ * 
+ * HID Diag pins
+ * 1 rs
+ * 2 csb
+ * 3 bled0
+ * 4 bled1
+ * 5 sw0
+ * 6 sw1
+ * 7
+ * 8
  */
 
 #ifdef P45K80
@@ -124,6 +134,7 @@
 volatile struct spi_link_type spi_link;
 
 const rom char *screen_data = " Light Link Box ";
+const rom char *dspace = " ";
 const rom int8_t *build_date = __DATE__, *build_time = __TIME__;
 volatile uint8_t data_in2, adc_buffer_ptr = 0,
 	adc_channel = 0;
@@ -312,7 +323,9 @@ void main(void)
 	eaDogM_SetPos(1, 0);
 	strncpypgm2ram(bootstr2, build_time, 16);
 	eaDogM_WriteString(bootstr2);
-//	eaDogM_SetPos(2, 0);
+	strncpypgm2ram(bootstr2, dspace, 16);
+	eaDogM_WriteString(bootstr2);
+	//	eaDogM_SetPos(2, 0);
 	strncpypgm2ram(bootstr2, build_date, 16);
 	eaDogM_WriteString(bootstr2);
 
