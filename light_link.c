@@ -9,6 +9,27 @@
  * button2 int 1 pin 34, led pin 5
  * Diag led array 8 led D[0..5]
  * CTMU CTED1 pin 35, CTED2 pin 36
+ * 
+ * Diag pins right to left
+ * 1 tx1
+ * 2 rx1
+ * 3 tx2
+ * 4 rx2
+ * 5 sdo
+ * 6 sdi
+ * 7 sck
+ * 8 sled
+ * 9 vcc
+ * Diag pins left to right
+ * 1 dled0
+ * 2 dled1
+ * 3 dled2
+ * 4 dled3
+ * 5 dled4
+ * 6 dled5
+ * 7 dled6
+ * 8 dled7
+ * 9 gnd
  */
 
 #ifdef P45K80
