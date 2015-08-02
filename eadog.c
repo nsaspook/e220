@@ -13,6 +13,7 @@
  */
 void init_display(void)
 {
+    wdtdelay(10000);
 	stdout = _H_USER;
 	ringBufS_put(spi_link.tx1b, 0x139);
 	ringBufS_put(spi_link.tx1b, 0x11d);
