@@ -168,7 +168,7 @@ void work_int(void)
 }
 #pragma code
 
-void wdtdelay(unsigned long delay)
+void wdtdelay(uint32_t delay)
 {
 	static uint32_t dcount;
 	for (dcount = 0; dcount <= delay; dcount++) { // delay a bit
@@ -183,7 +183,7 @@ void config_pic(void)
 	 * default operation mode
 	 */
 	L.rs232_mode = RS232_LL;
-	L.omode = LL_E220;
+	L.omode = LL_OPEN;
 
 	/* setup the link buffers first */
 	L.rx1b = &L.ring_buf1;
@@ -303,6 +303,8 @@ void config_pic(void)
 	/* clear any SSP error bits */
 	SSPCON1bits.WCOL = SSPCON1bits.SSPOV = LOW;
 	SLED = LOW;
+    BLED0=S_OFF;
+    BLED1=S_ON;
 
 }
 
@@ -364,7 +366,7 @@ void main(void)
 
 
 		start_tx1();
-		//		start_tx2();
+		start_tx2();
 		//		eaDogM_WriteStringAtPos(1,8,screen_data);
 
 		while (!ringBufS_empty(L.tx1b));

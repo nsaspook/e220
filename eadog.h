@@ -16,6 +16,7 @@ extern "C" {
 #include "light_link.h"
 
 	extern volatile struct spi_link_type spi_link;
+	extern void wdtdelay(uint32_t);
 
 	void init_display(void);
 	void send_lcd_data(uint8_t);

@@ -37,8 +37,8 @@ extern "C" {
 #define R_OFF           LOW				// control relay states
 #define R_ALL_OFF       0x00
 #define R_ALL_ON		0xff
-#define NO				LOW
-#define YES				HIGH
+#define NO			LOW
+#define YES			HIGH
 
 #define DLED0			LATDbits.LATD0
 #define DLED1			LATDbits.LATD1
@@ -53,8 +53,8 @@ extern "C" {
 #define BLED1			LATAbits.LATA3
 
 #define SLED			LATEbits.LATE0
-#define RS				LATEbits.LATE1
-#define CSB				LATEbits.LATE2
+#define RS			LATEbits.LATE1
+#define CSB			LATEbits.LATE2
 
 #define EADOGM_CMD_CLR 1
 #define EADOGM_CMD_CURSOR_ON     0b00001111
