@@ -12,6 +12,8 @@
 extern "C" {
 #endif
 
+#define	CHECKMARK_CRC	0x5757			// 16 bit crc checkmark
+#define	MAGIC			0x0300  		// data version checkmark
 #define LOW_VECTOR      0x18            // ISR low address
 #define HIGH_VECTOR     0x8             // ISR high address
 
@@ -37,8 +39,8 @@ extern "C" {
 #define R_OFF           LOW				// control relay states
 #define R_ALL_OFF       0x00
 #define R_ALL_ON		0xff
-#define NO			LOW
-#define YES			HIGH
+#define NO				LOW
+#define YES				HIGH
 
 #define DLED0			LATDbits.LATD0
 #define DLED1			LATDbits.LATD1
@@ -67,7 +69,7 @@ extern "C" {
 #define EADOGM_CMD_SELECT_R1     0b00010000
 #define EADOGM_CMD_SET_TABLE2    0b00101010
 #define EADOGM_COLSPAN 16
-	
+
 #ifdef	__cplusplus
 }
 #endif

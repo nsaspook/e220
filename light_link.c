@@ -144,11 +144,14 @@ volatile uint32_t adc_count = 0, adc_error_count = 0,
 volatile uint16_t adc_buffer[64] = {0}, adc_data_in = 0;
 #pragma udata gpr13
 volatile struct V_data V;
-volatile struct llflagtype ll_flag, ll_dumpflag;
+volatile struct llflagtype ll_flag;
 volatile int16_t tx_tmp = 0, rx_tmp = 0;
 #pragma udata gpr2
 volatile struct L_data L;
 #pragma udata gpr9
+volatile uint8_t WDT_TO = FALSE, EEP_ER = FALSE;
+uint8_t CRITC = 0, BOOT_STATUS = 0;
+volatile struct L_data L_EEPROM;
 
 //High priority interrupt vector, placed at address HIGH_VECTOR
 #pragma code data_interrupt = HIGH_VECTOR
@@ -179,11 +182,14 @@ void wdtdelay(uint32_t delay)
 
 void config_pic(void)
 {
+	if (RCONbits.TO == (uint8_t) LOW) WDT_TO = TRUE;
+	if (EECON1bits.WRERR && (EECON1bits.EEPGD == (uint8_t) LOW)) EEP_ER = TRUE;
 	/*
 	 * default operation mode
 	 */
 	L.rs232_mode = RS232_LL;
 	L.omode = LL_OPEN;
+	L.checksum = CHECKMARK_CRC;
 
 	/* setup the link buffers first */
 	L.rx1b = &L.ring_buf1;
@@ -303,8 +309,8 @@ void config_pic(void)
 	/* clear any SSP error bits */
 	SSPCON1bits.WCOL = SSPCON1bits.SSPOV = LOW;
 	SLED = LOW;
-    BLED0=S_OFF;
-    BLED1=S_ON;
+	BLED0 = S_OFF;
+	BLED1 = S_ON;
 
 }
 
@@ -317,6 +323,16 @@ void main(void)
 	char bootstr2[32];
 
 	config_pic(); // setup the uC for work
+
+	if (STKPTRbits.STKFUL) BOOT_STATUS += 1;
+	if (STKPTRbits.STKUNF) BOOT_STATUS += 2;
+	if (WDT_TO) BOOT_STATUS += 4;
+	if (EEP_ER) BOOT_STATUS += 8;
+	if (BOOT_STATUS) {
+		SLED = HIGH; // we had a previous error condition on boot
+		L.omode = LL_OPEN;
+	}
+
 	init_display();
 
 	eaDogM_Cls();
@@ -329,6 +345,8 @@ void main(void)
 	eaDogM_WriteString(bootstr2);
 	//	eaDogM_SetPos(2, 0);
 	strncpypgm2ram(bootstr2, build_date, 16);
+	eaDogM_WriteString(bootstr2);
+	sprintf(bootstr2, " bcode %i", BOOT_STATUS);
 	eaDogM_WriteString(bootstr2);
 
 	while (1) { // just loop and output results on DIAG LCD
@@ -370,6 +388,7 @@ void main(void)
 		//		eaDogM_WriteStringAtPos(1,8,screen_data);
 
 		while (!ringBufS_empty(L.tx1b));
+		ClrWdt(); // reset the WDT timer
 	}
 
 }
