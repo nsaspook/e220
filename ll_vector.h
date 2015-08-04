@@ -38,7 +38,7 @@ extern "C" {
 	extern volatile struct spi_link_type spi_link;
 	extern volatile uint8_t data_in2, adc_buffer_ptr,
 			adc_channel;
-	extern volatile uint16_t adc_buffer[64], adc_data_in;
+	extern volatile uint16_t adc_buffer[4], adc_data_in;
 #ifdef	__cplusplus
 }
 #endif
