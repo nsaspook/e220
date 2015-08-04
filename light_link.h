@@ -55,6 +55,8 @@ typedef struct V_data { // OS Counters
 } V_data;
 
 typedef struct L_data { // light link state data
+	uint8_t ctmu_data : 1;
+	uint8_t adc_chan;
 	uint8_t tx1_dac, tx2_dac;
 	struct ringBufS_t *rx1b, *tx1b, *rx2b, *tx2b, ring_buf1, ring_buf2, ring_buf3, ring_buf4;
 	mode_t omode;

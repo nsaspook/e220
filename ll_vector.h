@@ -29,6 +29,7 @@ extern "C" {
 	int8_t start_tx1(void);
 	int8_t start_tx2(void);
 
+	extern void wdtdelay(uint32_t);
 	extern volatile struct V_data V;
 	extern volatile struct L_data L;
 	extern volatile struct llflagtype ll_flag;

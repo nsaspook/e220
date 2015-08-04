@@ -56,8 +56,11 @@ extern "C" {
 #define BLED1			LATAbits.LATA3
 
 #define SLED			LATEbits.LATE0
-#define RS			LATEbits.LATE1
-#define CSB			LATEbits.LATE2
+#define RS				LATEbits.LATE1
+#define CSB				LATEbits.LATE2
+	
+#define CTMU_CHAN		28
+#define CTMU_BUF		3
 
 #define EADOGM_CMD_CLR 1
 #define EADOGM_CMD_CURSOR_ON     0b00001111
