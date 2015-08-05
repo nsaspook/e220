@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=mx_test_pic18_2
+PROJECTNAME=e220
 
 # Active Configuration
 DEFAULTCONF=default
