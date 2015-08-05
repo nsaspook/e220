@@ -423,14 +423,11 @@ void main(void) {
 
 
         start_tx1();
-        start_tx2();
-        //		eaDogM_WriteStringAtPos(1,8,screen_data);
-
-        while (!ringBufS_empty(L.tx1b));
-
         eaDogM_SetPos(0, 0);
         eaDogM_WriteString(bootstr2);
+        start_tx2();
 
+        while (!ringBufS_empty(L.tx1b));
         ClrWdt(); // reset the WDT timer
     }
 
