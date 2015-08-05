@@ -29,6 +29,12 @@ extern "C" {
 	int8_t start_tx1(void);
 	int8_t start_tx2(void);
 
+	void b0_on(void);
+	void b0_off(void);
+	void b1_on(void);
+	void b1_off(void);
+
+	extern volatile union Timers timer_long;
 	extern void wdtdelay(uint32_t);
 	extern volatile struct V_data V;
 	extern volatile struct L_data L;
@@ -40,6 +46,7 @@ extern "C" {
 	extern volatile uint8_t data_in2, adc_buffer_ptr,
 			adc_channel;
 	extern volatile uint16_t adc_buffer[4], adc_data_in;
+	extern volatile hidtype *hid0_ptr, *hid1_ptr;
 #ifdef	__cplusplus
 }
 #endif

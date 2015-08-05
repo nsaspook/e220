@@ -1,6 +1,26 @@
 #include "ll_vector.h"
 #include "ringbufs.h"
 
+void b0_on(void)
+{
+	BLED0 = S_ON;
+}
+
+void b1_on(void)
+{
+	BLED1 = S_ON;
+}
+
+void b0_off(void)
+{
+	BLED0 = S_OFF;
+}
+
+void b1_off(void)
+{
+	BLED1 = S_OFF;
+}
+
 //----------------------------------------------------------------------------
 // High priority interrupt routine
 #pragma	tmpdata	ISRHtmpdata
@@ -223,12 +243,16 @@ void data_handler(void)
 
 	if (INTCONbits.INT0IF) {
 		INTCONbits.INT0IF = LOW;
-		BLED0 = !BLED0;
+		V.buttonint_count++;
+//		BLED0 = !BLED0;
+		hid0_ptr->bled_on = !hid0_ptr->bled_on;
 	}
 
 	if (INTCON3bits.INT1IF) {
 		INTCON3bits.INT1IF = LOW;
-		BLED1 = !BLED1;
+		V.buttonint_count++;
+//		BLED1 = !BLED1;
+		hid1_ptr->bled_on = !hid1_ptr->bled_on;
 	}
 
 	DLED5 = HIGH;
@@ -240,10 +264,35 @@ void data_handler(void)
 
 void work_handler(void) // This is the low priority ISR routine, the high ISR routine will be called during this code section
 {
+	static uint8_t task = 0;
 	DLED4 = LOW;
 	if (PIR1bits.TMR2IF) {
 		PIR1bits.TMR2IF = LOW; // clear TMR2 int flag
 		WriteTimer2(PDELAY);
+
+		/*
+		 * task work stack
+		 */
+		switch (task) {
+		case 0:
+			if (hid0_ptr->bled_on) {
+				hid0_ptr->t_on();
+			} else {
+				hid0_ptr->t_off();
+			}
+			break;
+		case 1:
+			if (hid1_ptr->bled_on) {
+				hid1_ptr->t_on();
+			} else {
+				hid1_ptr->t_off();
+			}
+			break;
+		default:
+			task = 0;
+			break;
+		}
+		task++;
 	}
 	DLED4 = HIGH;
 }

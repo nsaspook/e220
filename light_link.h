@@ -68,6 +68,14 @@ typedef struct llflagtype {
 	uint32_t crc1_error, crc2_error, frame1_error, frame2_error, overrun1_error, overrun2_error;
 } llflagtype;
 
+typedef struct hidtype {
+	uint8_t bled_on : 1;
+	uint8_t bled_flash : 1;
+	uint8_t bled_flash_fast : 1;
+	void (*t_on)(void);
+	void (*t_off)(void);
+} hidtype;
+
 #ifdef	__cplusplus
 }
 #endif
