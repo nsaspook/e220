@@ -20,10 +20,10 @@ extern "C" {
 #define BAUD_FAST		41 // 375000 BPS is 41, high speed testing is 2
 #define BAUD_SLOW		0
 
-#define LCD_SHORT		0xfffe
-#define LCD_LONG		0xff80
+#define LCD_SHORT		0xfffe // ~60us
+#define LCD_LONG		0xffb0 // ~1.2ms
 
-#define	PDELAY	0xff
+#define	PDELAY			10000	// 36hz refresh for HID
 #define	TIMEROFFSET		26474	// timer0 16bit counter value for 1 second to overflow
 #define SLAVE_ACTIVE	10		// Activity counter level
 
@@ -49,8 +49,8 @@ extern "C" {
 #define DLED3			LATDbits.LATD3
 #define DLED4			LATDbits.LATD4
 #define DLED5			LATDbits.LATD5
-#define DLED6			LATDbits.LATD4
-#define DLED7			LATDbits.LATD5
+//#define DLED6			LATDbits.LATD4
+//#define DLED7			LATDbits.LATD5
 
 #define BLED0			LATAbits.LATA2
 #define BLED1			LATAbits.LATA3

@@ -61,6 +61,7 @@ void start_lcd(void)
 void wait_lcd(void)
 {
 	while (!ringBufS_empty(spi_link.tx1b));
+	while (spi_link.DATA);
 }
 
 /*

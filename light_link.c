@@ -307,9 +307,9 @@ void config_pic(void)
 	WriteTimer0(TIMEROFFSET); //      start timer0 at ~1 second ticks
 
 	/* event timer */
-	OpenTimer2(TIMER_INT_ON & T2_PS_1_16 & T2_POST_1_16);
-	IPR1bits.TMR2IP = 0; // set timer2 low pri interrupt
-	WriteTimer2(PDELAY);
+	OpenTimer1(T1_SOURCE_FOSC_4 & T1_16BIT_RW & T1_PS_1_8 & T1_OSC1EN_OFF & T1_SYNC_EXT_OFF, 0);
+	IPR1bits.TMR1IP = 0; // set timer2 low pri interrupt
+	WriteTimer1(PDELAY);
 
 	/* clear SPI module possible flag */
 	PIR1bits.SSPIF = LOW;
@@ -389,7 +389,7 @@ void main(void)
 	eaDogM_SetPos(2, 0);
 	strncpypgm2ram(bootstr2, build_date, 16);
 	eaDogM_WriteString(bootstr2);
-	sprintf(bootstr2, " C%i", BOOT_STATUS);
+	sprintf(bootstr2, " B%i", BOOT_STATUS);
 	eaDogM_WriteString(bootstr2);
 	strncpypgm2ram(bootstr2, screen_data, 16);
 
@@ -406,7 +406,7 @@ void main(void)
 			}
 		}
 
-		if (BLED0) {
+		if (!BLED0) {
 			ringBufS_put(L.tx2b, 0b000000000);
 			ringBufS_put(L.tx2b, 0b111111111);
 			ringBufS_put(L.tx2b, 0b011111111);
@@ -418,15 +418,14 @@ void main(void)
 			ringBufS_put(L.tx2b, 0b000000000);
 
 			ringBufS_put(L.tx1b, 0b000000000);
-			ringBufS_put(L.tx1b, 0b101010000);
+			ringBufS_put(L.tx1b, 0b111111111);
 			ringBufS_put(L.tx1b, 0b011111111);
-			ringBufS_put(L.tx1b, 0b110101111);
+			ringBufS_put(L.tx1b, 0b111111111);
 			ringBufS_put(L.tx1b, 0b011111111);
 			ringBufS_put(L.tx1b, 0b111111111);
 			ringBufS_put(L.tx1b, 0b011111111);
 			ringBufS_put(L.tx1b, 0b111111111);
 			ringBufS_put(L.tx1b, 0b000000000);
-
 
 			start_tx1();
 			start_tx2();
@@ -436,7 +435,7 @@ void main(void)
 		ClrWdt(); // reset the WDT timer
 
 		eaDogM_SetPos(0, 0);
-		//        eaDogM_Cls();
+		//		eaDogM_Cls();
 		eaDogM_WriteString(bootstr2);
 	}
 
