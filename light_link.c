@@ -59,14 +59,14 @@
 #pragma config IESO = OFF       // Internal External Oscillator Switch Over Mode (Disabled)
 
 // CONFIG2L
-#pragma config PWRTEN = OFF     // Power Up Timer (Disabled)
+#pragma config PWRTEN = ON      // Power Up Timer (Enabled)
 #pragma config BOREN = SBORDIS  // Brown Out Detect (Enabled in hardware, SBOREN disabled)
 #pragma config BORV = 3         // Brown-out Reset Voltage bits (1.8V)
 #pragma config BORPWR = ZPBORMV // BORMV Power level (ZPBORMV instead of BORMV is selected)
 
 // CONFIG2H
-#pragma config WDTEN = OFF      // Watchdog Timer (WDT disabled in hardware; SWDTEN bit disabled)
-#pragma config WDTPS = 8192     // Watchdog Postscaler (1:8192)
+#pragma config WDTEN = SWDTDIS  // Watchdog Timer
+#pragma config WDTPS = 512      // Watchdog Postscaler (1:8192)
 
 // CONFIG3H
 #pragma config CANMX = PORTB    // ECAN Mux bit (ECAN TX and RX pins are located on RB2 and RB3, respectively)
@@ -208,6 +208,8 @@ void config_pic(void)
 	L.omode = LL_OPEN;
 	L.checksum = CHECKMARK_CRC;
 	L.adc_chan = 0;
+	L.ctmu_data=LOW;
+	L.boot_code=LOW;
 	timer_long.lt = TIMEROFFSET;
 
 	/* setup the link buffers first */
@@ -382,32 +384,46 @@ void main(void)
 
 	config_pic(); // setup the uC for work
 
+	/*
+	 * look for boot or reboot codes
+	 */
 	if (STKPTRbits.STKFUL) BOOT_STATUS += 1;
 	if (STKPTRbits.STKUNF) BOOT_STATUS += 2;
 	if (WDT_TO) BOOT_STATUS += 4;
 	if (EEP_ER) BOOT_STATUS += 8;
 	if (BOOT_STATUS) {
-		SLED = HIGH; // we had a previous error condition on boot
+		L.boot_code = HIGH; // we had a previous error condition on boot
 		L.omode = LL_OPEN;
 	}
 
 	init_display();
-
+	
 	//	eaDogM_Cls();
 	strncpypgm2ram(bootstr2, screen_data, 16);
 	eaDogM_WriteString(bootstr2);
 	eaDogM_SetPos(1, 0);
-	strncpypgm2ram(bootstr2, build_time, 16);
-	eaDogM_WriteString(bootstr2);
-	strncpypgm2ram(bootstr2, dspace, 16);
-	eaDogM_WriteString(bootstr2);
-	eaDogM_SetPos(2, 0);
-	strncpypgm2ram(bootstr2, build_date, 16);
-	eaDogM_WriteString(bootstr2);
-	sprintf(bootstr2, " B%i", BOOT_STATUS);
-	eaDogM_WriteString(bootstr2);
-	strncpypgm2ram(bootstr2, screen_data, 16);
+	if (L.boot_code) {
+		sprintf(bootstr2, " Boot Code %i", BOOT_STATUS);
+		eaDogM_WriteString(bootstr2);
+		eaDogM_SetPos(2, 0);
+		eaDogM_WriteString(bootstr2);
+	} else {
+		strncpypgm2ram(bootstr2, build_time, 16);
+		eaDogM_WriteString(bootstr2);
+		strncpypgm2ram(bootstr2, dspace, 16);
+		eaDogM_WriteString(bootstr2);
+		eaDogM_SetPos(2, 0);
+		strncpypgm2ram(bootstr2, build_date, 16);
+		eaDogM_WriteString(bootstr2);
+		sprintf(bootstr2, " OK");
+		eaDogM_WriteString(bootstr2);
+	}
+	strncpypgm2ram(bootstr2, screen_data, 16); // load the name again
 
+	/*
+	 * if we get locked out of main, reboot
+	 */
+	WDTCONbits.SWDTEN = HIGH;
 	while (1) { // just loop and output results on DIAG LCD
 
 		if (SSPCON1bits.WCOL || SSPCON1bits.SSPOV) { // check for overruns/collisions
