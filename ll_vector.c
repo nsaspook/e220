@@ -9,6 +9,7 @@ void b0_on(void)
 void b1_on(void)
 {
 	BLED1 = S_ON;
+	L.omode = LL_E220;
 }
 
 void b0_off(void)
@@ -19,6 +20,7 @@ void b0_off(void)
 void b1_off(void)
 {
 	BLED1 = S_OFF;
+	L.omode = LL_OPEN;
 }
 
 //----------------------------------------------------------------------------
@@ -57,6 +59,7 @@ void data_handler(void)
 					} else {
 						spi_link.delay = LCD_SHORT;
 					}
+					spi_link.delay = LCD_LONG;
 					RS = LOW; // send cmd
 				} else {
 					spi_link.delay = LCD_SHORT;
@@ -228,6 +231,9 @@ void data_handler(void)
 		}
 	}
 
+	/*
+	 * link delay looks to be about 130ns with short cables
+	 */
 	if (PIR3bits.CTMUIF) { // CTED (tx1) is high then CTED2 (rx2)went high
 		PIE3bits.CTMUIE = LOW; // disable interrupt
 		PIR3bits.CTMUIF = LOW; // clear CTMU flag 
@@ -244,14 +250,14 @@ void data_handler(void)
 	if (INTCONbits.INT0IF) {
 		INTCONbits.INT0IF = LOW;
 		V.buttonint_count++;
-//		BLED0 = !BLED0;
+		//		BLED0 = !BLED0;
 		hid0_ptr->bled_on = !hid0_ptr->bled_on;
 	}
 
 	if (INTCON3bits.INT1IF) {
 		INTCON3bits.INT1IF = LOW;
 		V.buttonint_count++;
-//		BLED1 = !BLED1;
+		//		BLED1 = !BLED1;
 		hid1_ptr->bled_on = !hid1_ptr->bled_on;
 	}
 
@@ -264,7 +270,7 @@ void data_handler(void)
 
 void work_handler(void) // This is the low priority ISR routine, the high ISR routine will be called during this code section
 {
-	static uint8_t task = 0;
+	static int8_t task = 0;
 	DLED4 = LOW;
 	if (PIR1bits.TMR2IF) {
 		PIR1bits.TMR2IF = LOW; // clear TMR2 int flag
@@ -289,7 +295,7 @@ void work_handler(void) // This is the low priority ISR routine, the high ISR ro
 			}
 			break;
 		default:
-			task = 0;
+			task = -1; // null task
 			break;
 		}
 		task++;
