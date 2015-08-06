@@ -151,11 +151,11 @@ volatile struct llflagtype ll_flag;
 #pragma udata gpr3
 volatile struct L_data L;
 #pragma udata gpr4
-volatile struct ringBufS_t ring_buf3,ring_buf4;
+volatile struct ringBufS_t ring_buf1, ring_buf2;
 #pragma udata gpr5
-volatile struct ringBufS_t ring_buf5;
+volatile struct ringBufS_t ring_buf3, ring_buf4;
 #pragma udata gpr6
-volatile struct ringBufS_t ring_buf1,ring_buf2;
+volatile struct ringBufS_t ring_buf5, ring_buf6;
 #pragma udata gpr7
 volatile struct L_data L_EEPROM;
 volatile union Timers timer_long;
@@ -183,13 +183,18 @@ void work_int(void)
 }
 #pragma code
 
+/*
+ * value of 1 for 3.6us, 10 for 15us, 100 = 126us, 1000 for 1256us
+ */
 void wdtdelay(uint32_t delay)
 {
 	static uint32_t dcount;
+	DELAY_TOGGLE = S_ON;
 	for (dcount = 0; dcount <= delay; dcount++) { // delay a bit
 		Nop();
 		ClrWdt(); // reset the WDT timer
 	};
+	DELAY_TOGGLE = S_OFF;
 }
 
 void config_pic(void)
@@ -211,11 +216,13 @@ void config_pic(void)
 	L.rx2b = &ring_buf3;
 	L.tx2b = &ring_buf4;
 	spi_link.tx1b = &ring_buf5;
+	spi_link.tx1a = &ring_buf6;
 	ringBufS_init(L.rx1b);
 	ringBufS_init(L.tx1b);
 	ringBufS_init(L.rx2b);
 	ringBufS_init(L.tx2b);
 	ringBufS_init(spi_link.tx1b);
+	ringBufS_init(spi_link.tx1a);
 
 	OSCCON = 0x70; // internal osc 16mhz, CONFIG OPTION 4XPLL for 64MHZ
 	OSCTUNE = 0b01000000; // 4x pll
@@ -440,7 +447,7 @@ void main(void)
 			while (!ringBufS_empty(L.tx1b));
 		}
 
-		ClrWdt(); // reset the WDT timer
+		wdtdelay(1);
 
 		//		eaDogM_SetPos(0, 0);
 		//		eaDogM_Cls();

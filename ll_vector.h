@@ -17,6 +17,7 @@ extern "C" {
 #include <timers.h>
 #include "light_link.h"
 #include <EEP.h>
+#include "eadog.h"
 
 	volatile void s_crit(void);
 	volatile void e_crit(void);

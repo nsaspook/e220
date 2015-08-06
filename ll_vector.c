@@ -54,11 +54,11 @@ void data_handler(void)
 				ct_spi = ringBufS_get(spi_link.tx1b); // get the 16 bit data
 				spi_link.config = ct_spi >> 8;
 
-				if (spi_link.config & CMD_MASK) { // is this command data
+				if (spi_link.config & LCD_CMD_MASK) { // is this command data
 					/* 
 					 * check for clear and home commands
 					 */
-					if ((ct_spi & 0xff) > CLEAR_HOME) { // check only the data bits for the last 2 bits
+					if ((ct_spi & 0xff) > LCD_CLEAR_HOME) { // check only the data bits for the last 2 bits
 						spi_link.delay = LCD_LONG; // needs at least 1.08 ms LCD instruction execution time
 					} else {
 						spi_link.delay = LCD_SHORT; // needs at least 27.3us LCD instruction execution time

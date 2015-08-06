@@ -24,7 +24,7 @@ typedef signed long int32_t;
 typedef signed long long int64_t;
 
 	
-#define RBUF_SIZE    16
+#define RBUF_SIZE    32
 
 	typedef struct ringBufS_t {
 		uint16_t buf[RBUF_SIZE];

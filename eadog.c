@@ -8,13 +8,16 @@
 #define eaDogM_DisplayOn()       eaDogM_WriteCommand(EADOGM_CMD_DISPLAY_ON)
 #define eaDogM_DisplayOff()      eaDogM_WriteCommand(EADOGM_CMD_DISPLAY_OFF)
 
+#define max_strlen	16
+
 /*
  * Init the EA DOGM163 in 8bit serial mode
  */
 void init_display(void)
 {
-    wdtdelay(10000);
-	stdout = _H_USER;
+	SLED = HIGH;
+	wdtdelay(350000); // > 400ms power up delay
+	stdout = _H_USER; // use our STDOUT handler
 	ringBufS_put(spi_link.tx1b, 0x139);
 	ringBufS_put(spi_link.tx1b, 0x11d);
 	ringBufS_put(spi_link.tx1b, 0x150);
@@ -26,7 +29,8 @@ void init_display(void)
 	ringBufS_put(spi_link.tx1b, 0x102);
 	ringBufS_put(spi_link.tx1b, 0x106);
 	start_lcd();
-	while (!ringBufS_empty(spi_link.tx1b));
+	wait_lcd();
+	SLED = LOW;
 }
 
 /*
@@ -42,14 +46,14 @@ void send_lcd_data(uint8_t data)
  */
 void send_lcd_cmd(uint8_t cmd)
 {
-	uint16_t symbol = 0;
+	uint16_t symbol;
 
-	symbol = (uint16_t) cmd | 0b100000000;
+	symbol = (uint16_t) cmd | LCD_CMD_SET;
 	ringBufS_put(spi_link.tx1b, symbol);
 }
 
 /*
- * Trigger the SPI interrupt
+ * Trigger the SPI interrupt to program the LCD display
  */
 void start_lcd(void)
 {
@@ -61,19 +65,8 @@ void start_lcd(void)
 void wait_lcd(void)
 {
 	while (!ringBufS_empty(spi_link.tx1b));
-	while (spi_link.DATA);
+	while (spi_link.LCD_DATA);
 }
-
-/*
- * 
- *            file: EA-DOGM_MIO.c
- *         version: 2.03
- *     description: Multi I/O driver for EA DOGM displays
- *                : Uses 8Bit, SPI HW or SPI SW (bitbang)
- *     written by : Michael Bradley (mbradley@mculabs.com)
- *   contributions: Imaginos (CCS forum), Emil Nad (8Bit testing)
- *                  jgschmidt (CCS forum)
- */
 
 void eaDogM_WriteChr(char value)
 {
@@ -82,6 +75,9 @@ void eaDogM_WriteChr(char value)
 	wait_lcd();
 }
 
+/*
+ * STDOUT user handler function
+ */
 int _user_putc(char c)
 {
 	send_lcd_data(c);
@@ -112,16 +108,16 @@ void eaDogM_ClearRow(uint8_t r)
 
 void eaDogM_WriteString(char *strPtr)
 {
-	if (strlen(strPtr) >= 16) strPtr[16] = 0;
-	printf("%s", strPtr);
+	if (strlen(strPtr) > max_strlen) strPtr[max_strlen] = 0;
+	printf("%s", strPtr); // STDOUT redirected to _user_putc, slow ~380us
 	start_lcd();
 	wait_lcd();
 }
 
 void eaDogM_WriteStringAtPos(uint8_t r, uint8_t c, char *strPtr)
 {
-	eaDogM_WriteCommand((EADOGM_CMD_DDRAM_ADDR + (r * EADOGM_COLSPAN) + c));
-	if (strlen(strPtr) >= 16) strPtr[16] = 0;
+	send_lcd_cmd((EADOGM_CMD_DDRAM_ADDR + (r * EADOGM_COLSPAN) + c));
+	if (strlen(strPtr) > max_strlen) strPtr[max_strlen] = 0;
 	printf("%s", strPtr);
 	start_lcd();
 	wait_lcd();

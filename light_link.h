@@ -41,11 +41,11 @@ typedef enum {
 struct spi_link_type { // internal state table
 	uint8_t SPI_LCD : 1;
 	uint8_t SPI_AUX : 1;
-	uint8_t TIMER : 1;
-	uint8_t DATA : 1;
+	uint8_t LCD_TIMER : 1;
+	uint8_t LCD_DATA : 1;
 	uint16_t delay;
 	uint8_t config;
-	struct ringBufS_t *tx1b, ring_buf1;
+	struct ringBufS_t *tx1b, *tx1a;
 	int32_t int_count;
 };
 
@@ -58,7 +58,7 @@ typedef struct L_data { // light link state data
 	uint8_t ctmu_data : 1;
 	uint8_t adc_chan;
 	uint8_t tx1_dac, tx2_dac;
-	struct ringBufS_t *rx1b, *tx1b, *rx2b, *tx2b, ring_buf1, ring_buf2, ring_buf3, ring_buf4;
+	struct ringBufS_t *rx1b, *tx1b, *rx2b, *tx2b;
 	mode_t omode;
 	level_t rs232_mode;
 	uint16_t checksum;
