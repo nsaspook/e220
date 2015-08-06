@@ -193,7 +193,6 @@ void data_handler(void)
 			 * send time per byte 11us
 			 */
 			if (spi_link.DATA) {
-				DLED6 = !DLED6;
 				PIE1bits.SSPIE = LOW; // stop next int from received byte
 				SSPBUF = ct_spi; // send data
 			}
@@ -249,14 +248,12 @@ void data_handler(void)
 	if (INTCONbits.INT0IF) {
 		INTCONbits.INT0IF = LOW;
 		V.buttonint_count++;
-		//		BLED0 = !BLED0;
 		hid0_ptr->bled_on = !hid0_ptr->bled_on;
 	}
 
 	if (INTCON3bits.INT1IF) {
 		INTCON3bits.INT1IF = LOW;
 		V.buttonint_count++;
-		//		BLED1 = !BLED1;
 		hid1_ptr->bled_on = !hid1_ptr->bled_on;
 	}
 
@@ -270,10 +267,11 @@ void data_handler(void)
 void work_handler(void) // This is the low priority ISR routine, the high ISR routine will be called during this code section
 {
 	static int8_t task = 0;
-	DLED4 = LOW;
-	if (PIR1bits.TMR2IF) {
-		PIR1bits.TMR2IF = LOW; // clear TMR2 int flag
-		WriteTimer2(PDELAY);
+
+	if (PIR1bits.TMR1IF) {
+		DLED4 = LOW;
+		PIR1bits.TMR1IF = LOW; // clear TMR1 int flag
+		WriteTimer1(PDELAY);
 
 		/*
 		 * task work stack
@@ -298,8 +296,8 @@ void work_handler(void) // This is the low priority ISR routine, the high ISR ro
 			break;
 		}
 		task++;
+		DLED4 = HIGH;
 	}
-	DLED4 = HIGH;
 }
 #pragma	tmpdata
 
