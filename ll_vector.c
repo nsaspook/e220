@@ -59,11 +59,10 @@ void data_handler(void)
 					} else {
 						spi_link.delay = LCD_SHORT;
 					}
-					spi_link.delay = LCD_LONG;
-					RS = LOW; // send cmd
+					RS = LOW; // sending lcd command
 				} else {
 					spi_link.delay = LCD_SHORT;
-					RS = HIGH; // send data
+					RS = HIGH; // sending data
 				}
 				CSB = LOW; // select the display SPI receiver
 				/*
@@ -71,7 +70,7 @@ void data_handler(void)
 				 */
 				spi_link.TIMER = HIGH;
 				spi_link.DATA = HIGH;
-				INTCONbits.TMR0IF = HIGH; //set interrupt flag
+				INTCONbits.TMR0IF = HIGH; //set interrupt flag to update timer0
 			}
 		}
 		if (spi_link.SPI_AUX) {
