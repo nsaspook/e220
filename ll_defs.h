@@ -51,6 +51,8 @@ extern "C" {
 #define DLED5			LATDbits.LATD5
 //#define DLED6			LATDbits.LATD4
 //#define DLED7			LATDbits.LATD5
+	
+#define DELAY_TOGGLE	LATAbits.LATA6
 
 #define BLED0			LATAbits.LATA2
 #define BLED1			LATAbits.LATA3
@@ -58,6 +60,7 @@ extern "C" {
 #define SLED			LATEbits.LATE0
 #define RS				LATEbits.LATE1
 #define CSB				LATEbits.LATE2
+#define CSA				LATAbits.LATA7
 	
 #define CTMU_CHAN		28
 #define CTMU_BUF		3
