@@ -38,43 +38,47 @@ void data_handler(void)
 	if (PIE1bits.SSPIE && PIR1bits.SSPIF) { // send data to SPI bus
 		spi_link.int_count++;
 		PIR1bits.SSPIF = LOW;
-		ct1 = SSPBUF; // read to clear the BF flag, don't care about the data with LCD
+		ct1 = SSPBUF; // read to clear the BF flag, don't care about the data with LCD but AUX might
 		/*
 		 * the SPI data is not sent here, it's scheduled by timer0
-		 * with about 66us for the whole process with LCD data byte to next byte
-		 * and 18.5us overhead for this
+		 * with about 63us for the whole process with LCD data byte to next byte with timer0 LCD delay
+		 * fixed times: ~8us per byte 1MHz clock, 27.3us LCD instruction execution time
+		 * and ~18us overhead for this part
 		 */
 		if (spi_link.SPI_LCD) {
-			if (spi_link.tx1b->count == 0) { // buffer has been sent, 3.6us overhead
-				PIE1bits.SSPIE = LOW; // stop data xmit
-				spi_link.TIMER = LOW;
-				if (spi_link.DATA) INTCONbits.TMR0IF = HIGH; //set interrupt flag
+			if (spi_link.tx1b->count == 0) { // data buffer is empty but maybe the delay is not done, 3.6us overhead
+				PIE1bits.SSPIE = LOW; // stop data transmitter
+				spi_link.LCD_TIMER = LOW;
+				if (spi_link.LCD_DATA) INTCONbits.TMR0IF = HIGH; //set interrupt flag
 			} else {
 				ct_spi = ringBufS_get(spi_link.tx1b); // get the 16 bit data
 				spi_link.config = ct_spi >> 8;
 
-				if (spi_link.config & 0b00000001) { // check for clear and home commands
-					if (((ct_spi & 0b11111111) == 0b00000001) || ((ct_spi & 0b11111110) == 0b00000010)) {
-						spi_link.delay = LCD_LONG;
+				if (spi_link.config & CMD_MASK) { // is this command data
+					/* 
+					 * check for clear and home commands
+					 */
+					if ((ct_spi & 0xff) > CLEAR_HOME) { // check only the data bits for the last 2 bits
+						spi_link.delay = LCD_LONG; // needs at least 1.08 ms LCD instruction execution time
 					} else {
-						spi_link.delay = LCD_SHORT;
+						spi_link.delay = LCD_SHORT; // needs at least 27.3us LCD instruction execution time
 					}
-					RS = LOW; // sending lcd command
+					RS = LOW; // sending LCD command data
 				} else {
 					spi_link.delay = LCD_SHORT;
-					RS = HIGH; // sending data
+					RS = HIGH; // sending character data
 				}
 				CSB = LOW; // select the display SPI receiver
 				/*
 				 * setup timer0 for SPI delay and buffer write
 				 */
-				spi_link.TIMER = HIGH;
-				spi_link.DATA = HIGH;
-				INTCONbits.TMR0IF = HIGH; //set interrupt flag to update timer0
+				spi_link.LCD_TIMER = HIGH;
+				spi_link.LCD_DATA = HIGH;
+				INTCONbits.TMR0IF = HIGH; //set interrupt flag to update timer0 as we fall down the ISR
 			}
 		}
 		if (spi_link.SPI_AUX) {
-
+			CSA = LOW; // select the AUX SPI receiver
 		}
 	}
 
@@ -181,19 +185,19 @@ void data_handler(void)
 	/*
 	 * This is a little tricky, it normally runs at a very slow speed for a system heartbeat
 	 * but it also times a delay for SPI data to a LCD display for data and commands
-	 * ~36us for data and ~2ms for commands set in spi_link.delay
-	 * with overhead for this
+	 * ~36us for data and ~1.2ms for commands set in spi_link.delay
+	 * with ~3us overhead for this part
 	 */
 	if (INTCONbits.TMR0IF) { // check timer0 1 second timer & SPI delay int handler
 		DLED3 = S_ON;
-		if (spi_link.TIMER) {
-			spi_link.TIMER = LOW;
+		if (spi_link.LCD_TIMER) {
+			spi_link.LCD_TIMER = LOW;
 			/*
-			 * send the SPI data then reset timer0 for fast speed data
+			 * send the SPI data then reset timer0 for fast speed data delay
 			 * send time per byte 11us
 			 */
-			if (spi_link.DATA) {
-				PIE1bits.SSPIE = LOW; // stop next int from received byte
+			if (spi_link.LCD_DATA) {
+				PIE1bits.SSPIE = LOW; // don't process the receive interrupt from the send yet
 				SSPBUF = ct_spi; // send data
 			}
 			/*
@@ -203,9 +207,9 @@ void data_handler(void)
 			TMR0H = timer.bt[HIGH]; // Write high byte to Timer0
 			TMR0L = timer.bt[LOW]; // Write low byte to Timer0
 		} else {
-			if (spi_link.DATA) {
-				spi_link.DATA = LOW; // clear the data sent flag
-				PIE1bits.SSPIE = HIGH; // enable to receive byte
+			if (spi_link.LCD_DATA) { // we are in a delay from sending a byte
+				spi_link.LCD_DATA = LOW; // clear the data sent flag
+				PIE1bits.SSPIE = HIGH; // enable to receive byte when ISR exits, ISR will be called again in ~5us to get it
 			}
 			// set normal delay
 			TMR0H = timer_long.bt[HIGH]; // Write high byte to Timer0
