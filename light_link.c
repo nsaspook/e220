@@ -136,26 +136,34 @@ volatile struct spi_link_type spi_link;
 const rom char *screen_data = " Light Link Box ";
 const rom char *dspace = " ";
 const rom int8_t *build_date = __DATE__, *build_time = __TIME__;
+
 volatile uint8_t data_in2, adc_buffer_ptr = 0,
 	adc_channel = 0;
-
 volatile uint32_t adc_count = 0, adc_error_count = 0,
 	slave_int_count = 0, last_slave_int_count = 0;
 volatile uint16_t adc_buffer[4] = {0}, adc_data_in = 0;
-#pragma udata gpr13
-volatile struct V_data V;
-volatile struct llflagtype ll_flag;
-volatile int16_t tx_tmp = 0, rx_tmp = 0;
-#pragma udata gpr2
-volatile struct L_data L;
-#pragma udata gpr9
 volatile uint8_t WDT_TO = FALSE, EEP_ER = FALSE;
 uint8_t CRITC = 0, BOOT_STATUS = 0;
+volatile int16_t tx_tmp = 0, rx_tmp = 0;
+#pragma udata gpr2
+volatile struct V_data V;
+volatile struct llflagtype ll_flag;
+#pragma udata gpr3
+volatile struct L_data L;
+#pragma udata gpr4
+volatile struct ringBufS_t ring_buf3,ring_buf4;
+#pragma udata gpr5
+volatile struct ringBufS_t ring_buf5;
+#pragma udata gpr6
+volatile struct ringBufS_t ring_buf1,ring_buf2;
+#pragma udata gpr7
 volatile struct L_data L_EEPROM;
 volatile union Timers timer_long;
+#pragma idata gpr8
 volatile hidtype hid0 = {0, 0, 0, b0_on, b0_off},
 hid1 = {0, 0, 0, b1_on, b1_off};
 volatile hidtype *hid0_ptr = &hid0, *hid1_ptr = &hid1;
+#pragma udata 
 
 //High priority interrupt vector, placed at address HIGH_VECTOR
 #pragma code data_interrupt = HIGH_VECTOR
@@ -198,11 +206,11 @@ void config_pic(void)
 	timer_long.lt = TIMEROFFSET;
 
 	/* setup the link buffers first */
-	L.rx1b = &L.ring_buf1;
-	L.tx1b = &L.ring_buf2;
-	L.rx2b = &L.ring_buf3;
-	L.tx2b = &L.ring_buf4;
-	spi_link.tx1b = &spi_link.ring_buf1;
+	L.rx1b = &ring_buf1;
+	L.tx1b = &ring_buf2;
+	L.rx2b = &ring_buf3;
+	L.tx2b = &ring_buf4;
+	spi_link.tx1b = &ring_buf5;
 	ringBufS_init(L.rx1b);
 	ringBufS_init(L.tx1b);
 	ringBufS_init(L.rx2b);
@@ -434,9 +442,9 @@ void main(void)
 
 		ClrWdt(); // reset the WDT timer
 
-		eaDogM_SetPos(0, 0);
+		//		eaDogM_SetPos(0, 0);
 		//		eaDogM_Cls();
-		eaDogM_WriteString(bootstr2);
+		eaDogM_WriteStringAtPos(0, 0, bootstr2);
 	}
 
 }
