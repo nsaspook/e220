@@ -208,8 +208,11 @@ void config_pic(void)
 	L.omode = LL_OPEN;
 	L.checksum = CHECKMARK_CRC;
 	L.adc_chan = 0;
-	L.ctmu_data=LOW;
-	L.boot_code=LOW;
+	L.ctmu_data = HIGH;
+	L.ctmu_data_temp = LOW;
+	L.ctmu_adc = 0;
+	L.ctmu_adc_zero = CTMU_ZERO;
+	L.boot_code = LOW;
 	timer_long.lt = TIMEROFFSET;
 
 	/* setup the link buffers first */
@@ -259,7 +262,7 @@ void config_pic(void)
 
 	// ADCON2
 	ADCON2bits.ADFM = 1; // Results format 1= Right justified
-	ADCON2bits.ACQT = 7; // Acquition time 7 = 20TAD 2 = 4TAD 1=2TAD
+	ADCON2bits.ACQT = 1; // Acquition time 7 = 20TAD 2 = 4TAD 1=2TAD
 	ADCON2bits.ADCS = 6; // Clock conversion bits 6= FOSC/64 2=FOSC/32
 	// ADCON1
 	ADCON1bits.VCFG = 3; // Vref+ = 4.096
@@ -272,7 +275,7 @@ void config_pic(void)
 	RS = HIGH; // lcd
 	CSB = HIGH; //lcd
 
-	PIE1bits.ADIE = LOW; // the ADC interrupt enable bit
+	PIE1bits.ADIE = HIGH; // the ADC interrupt enable bit
 	IPR1bits.ADIP = HIGH; // ADC use high pri
 
 	OpenSPI(SPI_FOSC_64, MODE_00, SMPEND); // 1MHz
@@ -335,14 +338,21 @@ void config_pic(void)
 	 * CTMU
 	 */
 
+	/* CTMU pins setup */
+	TRISBbits.TRISB2 = HIGH; //CTED1
+	TRISBbits.TRISB3 = HIGH; //CTED2
+
 	//CTMUCONH/1 - CTMU Control registers
 	CTMUCONH = 0x04; //make sure CTMU is disabled and ready for edge 1 before 2
-	CTMUCONL = 0x90; // positive edges
-	CTMUICON = 0x01; //.55uA, Nominal - No Adjustment default
+	CTMUICON = 0x03; //.55uA*100, Nominal - No Adjustment default
 	CTMUCONLbits.EDG1SEL = 3; // Set Edge CTED1
 	CTMUCONLbits.EDG2SEL = 2; // CTED2
-	CTMUCONHbits.CTMUEN = 1; //Enable the CTMU
-	CTMUCONHbits.IDISSEN = 1; // drain the circuit
+	CTMUCONLbits.EDG1POL = HIGH; // Set Edge
+	CTMUCONLbits.EDG2POL = HIGH; // positive edges
+	CTMUCONHbits.CTMUEN = HIGH; //Enable the CTMU
+	CTMUCONHbits.IDISSEN = HIGH; // drain the circuit
+	CTMUCONHbits.CTTRIG = LOW; // disable trigger
+
 
 	/*
 	 * Switch input/PORTB config
@@ -380,7 +390,7 @@ void config_pic(void)
 void main(void)
 {
 	int16_t i, j, k = 0;
-	char bootstr2[32];
+	char bootstr1[32], bootstr2[32];
 
 	config_pic(); // setup the uC for work
 
@@ -397,13 +407,13 @@ void main(void)
 	}
 
 	init_display();
-	
+
 	//	eaDogM_Cls();
 	strncpypgm2ram(bootstr2, screen_data, 16);
 	eaDogM_WriteString(bootstr2);
 	eaDogM_SetPos(1, 0);
 	if (L.boot_code) {
-		sprintf(bootstr2, " Boot Code %i", BOOT_STATUS);
+		sprintf(bootstr2, " Reboot Code %i", BOOT_STATUS);
 		eaDogM_WriteString(bootstr2);
 		eaDogM_SetPos(2, 0);
 		eaDogM_WriteString(bootstr2);
@@ -424,6 +434,7 @@ void main(void)
 	 * if we get locked out of main, reboot
 	 */
 	WDTCONbits.SWDTEN = HIGH;
+
 	while (1) { // just loop and output results on DIAG LCD
 
 		if (SSPCON1bits.WCOL || SSPCON1bits.SSPOV) { // check for overruns/collisions
@@ -438,6 +449,7 @@ void main(void)
 		}
 
 		if (!BLED0) {
+			start_ctmu();
 			ringBufS_put(L.tx2b, 0b000000000);
 			ringBufS_put(L.tx2b, 0b111111111);
 			ringBufS_put(L.tx2b, 0b011111111);
@@ -463,11 +475,15 @@ void main(void)
 			while (!ringBufS_empty(L.tx1b));
 		}
 
-		wdtdelay(1);
+
+		wdtdelay(1000);
+		measure_chip_temp();
 
 		//		eaDogM_SetPos(0, 0);
 		//		eaDogM_Cls();
+		sprintf(bootstr1, "ADC %i %i        ", L.ctmu_adc, L.pic_temp);
 		eaDogM_WriteStringAtPos(0, 0, bootstr2);
+		eaDogM_WriteStringAtPos(1, 0, bootstr1);
 	}
 
 }
