@@ -56,13 +56,14 @@ typedef struct V_data { // OS Counters
 
 typedef struct L_data { // light link state data
 	uint8_t ctmu_data : 1;
-	uint8_t boot_code :1;
+	uint8_t ctmu_data_temp : 1;
+	uint8_t boot_code : 1;
 	uint8_t adc_chan;
 	uint8_t tx1_dac, tx2_dac;
 	struct ringBufS_t *rx1b, *tx1b, *rx2b, *tx2b;
 	mode_t omode;
 	level_t rs232_mode;
-	uint16_t checksum;
+	uint16_t ctmu_adc, ctmu_adc_zero, pic_temp, checksum;
 } L_data;
 
 typedef struct llflagtype {

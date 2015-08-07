@@ -30,7 +30,7 @@ void b1_off(void)
 
 void data_handler(void)
 {
-	static uint16_t channel = 0, cr1, cr2, ct1, ct2, ct_spi;
+	static uint16_t cr1, cr2, ct1, ct2, ct_spi;
 	static union Timers timer;
 	static uint8_t b_data;
 
@@ -223,12 +223,14 @@ void data_handler(void)
 		DLED2 = !DLED2;
 		PIR1bits.ADIF = LOW;
 		adc_count++; // just keep count
-		if (!L.ctmu_data) {
-			adc_buffer[CTMU_BUF] = ADRES;
-			CTMUCONHbits.CTMUEN = HIGH; // Enable the CTMU
-			CTMUCONHbits.IDISSEN = HIGH; // drain the circuit
-			L.ctmu_data = HIGH;
+		if (L.ctmu_data) {
+			L.ctmu_adc = ADRES;
+			L.ctmu_data = LOW;
 		} else {
+			if (L.ctmu_data_temp) {
+				L.pic_temp = ADRES;
+				L.ctmu_data_temp = LOW;
+			}
 			adc_buffer[L.adc_chan] = ADRES;
 		}
 	}
@@ -237,11 +239,13 @@ void data_handler(void)
 	 * link delay looks to be about 130ns with short cables
 	 */
 	if (PIR3bits.CTMUIF) { // CTED (tx1) is high then CTED2 (rx2)went high
+		DLED4 = !DLED4;
 		PIE3bits.CTMUIE = LOW; // disable interrupt
 		PIR3bits.CTMUIF = LOW; // clear CTMU flag 
-		if (!CTMUCONHbits.IDISSEN) { // charge cycle , because not shorting the CTMU voltage.
-			ADCON0bits.GO = HIGH; // and begin A/D conv, will set adc int flag when done.
-		}
+		CTMUCONHbits.EDGEN = LOW;
+		CTMUCONLbits.EDG1STAT = 0; // Set Edge status bits to zero
+		CTMUCONLbits.EDG2STAT = 0;
+		ADCON0bits.GO = HIGH; // and begin A/D conv, will set adc int flag when done.
 	}
 
 	if (INTCONbits.RBIF) {
@@ -273,7 +277,7 @@ void work_handler(void) // This is the low priority ISR routine, the high ISR ro
 	static int8_t task = 0;
 
 	if (PIR1bits.TMR1IF) {
-		DLED4 = LOW;
+
 		PIR1bits.TMR1IF = LOW; // clear TMR1 int flag
 		WriteTimer1(PDELAY);
 
@@ -300,7 +304,7 @@ void work_handler(void) // This is the low priority ISR routine, the high ISR ro
 			break;
 		}
 		task++;
-		DLED4 = HIGH;
+
 	}
 }
 #pragma	tmpdata
@@ -382,16 +386,43 @@ void wipe_data_eeprom(uint16_t max_eeprom)
 	}
 }
 
+/*
+ * ADC results from build calibration
+ * value with 6 inch jumper 54 as the 'zero' CTED1 to CTED2 = 23ns
+ * value with 2M jumper 74, CTED1 to CTED2 = 33ns
+ * ~5ns & 10 counts per meter, ~0.5ns timing resolution
+ */
 void start_ctmu(void)
 {
 	// configure ADC for next reading
-	ADCON0bits.CHS = CTMU_CHAN; // Select ADC
-	ADCON0bits.ADON = 1; // Turn on ADC
-	adc_buffer[CTMU_BUF] = 0; // clear ctmu data buffer index
-	CTMUCONHbits.IDISSEN = LOW; // start drain
+	ADCON0bits.CHS = CTMU_CHAN; // Select ADC channel
+	PIR1bits.ADIF = LOW;
+	PIE1bits.ADIE = HIGH;
+	CTMUCONHbits.IDISSEN = HIGH; // start drain
 	wdtdelay(100); // time to drain the internal cap for measurements
 	PIR3bits.CTMUIF = LOW; // clear flag
 	CTMUCONHbits.IDISSEN = LOW; // end drain
-	L.ctmu_data = LOW;
+	L.ctmu_data = HIGH;
+	L.ctmu_data_temp = LOW;
 	PIE3bits.CTMUIE = HIGH; //enable interrupt on edges
+	CTMUCONLbits.EDG1STAT = 0; // Set Edge status bits to zero
+	CTMUCONLbits.EDG2STAT = 0;
+	CTMUCONHbits.EDGEN = HIGH; // start looking at edges
+}
+
+void measure_chip_temp(void)
+{
+	ADCON0bits.CHS = TEMP_DIODE; // Select ADC channel
+	PIE3bits.CTMUIE = LOW; //disable interrupt on edges
+	CTMUCONLbits.EDG1STAT = 0; // Set Edge status bits to zero
+	CTMUCONLbits.EDG2STAT = 0;
+	CTMUCONHbits.EDGEN = HIGH; // start looking at edges
+	CTMUCONLbits.EDG1STAT = 1;
+	wdtdelay(100); // CTMU setup time before sampling
+	L.ctmu_data = LOW;
+	L.ctmu_data_temp = HIGH;
+	ADCON0bits.GO = 1; // Start conversion 
+	while (ADCON0bits.GO);
+	CTMUCONLbits.EDG1STAT = 0; // deactivate current source  
+	wdtdelay(100); // wait for ISR to update buffer
 }

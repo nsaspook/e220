@@ -29,6 +29,8 @@ extern "C" {
 	void work_handler(void);
 	int8_t start_tx1(void);
 	int8_t start_tx2(void);
+	void start_ctmu(void);
+	void measure_chip_temp(void);
 
 	void b0_on(void);
 	void b0_off(void);

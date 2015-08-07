@@ -62,8 +62,12 @@ extern "C" {
 #define CSB				LATEbits.LATE2
 #define CSA				LATAbits.LATA7
 	
-#define CTMU_CHAN		28
-#define CTMU_BUF		3
+#define TEMP_DIODE		29	// internal chip temperature diode
+#define CTMU_CHAN		28	// mux disconnected for lowest possible measurement capacitor
+#define CTMU_ZERO		54
+#define CTMU_2M			74
+#define CTMU_RES_PS		500 // 500ps per ADC count
+#define CTMU_ADC_METER	10	// counts per meter
 
 #define EADOGM_CMD_CLR 1
 #define EADOGM_CMD_CURSOR_ON     0b00001111
