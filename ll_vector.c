@@ -1,6 +1,37 @@
 #include "ll_vector.h"
 #include "ringbufs.h"
 
+/* two point calibration code from
+ * https://www.ccsinfo.com/forum/viewtopic.php?p=173294
+ * http://www.ti.com/lit/an/sbaa073a/sbaa073a.pdf
+ */
+#define ZERO_DEGC_IN_CENTIK 27315 // centi-K = 0.01K units 
+
+struct {
+	// alpha numerator and denominator 
+	uint16_t alphan; // ADC bits 
+	int32_t alphad; // 0.01K units 
+} calibration;
+
+// Initialize module 
+
+// 86F (30C) = alphan 126
+void inttemp_init(void)
+{
+	// arbitrary values 
+	calibration.alphan = 126;
+	calibration.alphad = 300 * 10 + ZERO_DEGC_IN_CENTIK;
+}
+
+// Single point calibration to assumed ambient temperature 
+
+void inttemp_calibrate(int16_t temperature)
+{
+	// alpha = delta diode voltage / temperature 
+	calibration.alphan = inttemp_deltav();
+	calibration.alphad = ((int32_t) temperature * 10 + ZERO_DEGC_IN_CENTIK);
+}
+
 void b0_on(void)
 {
 	BLED0 = S_ON;
@@ -220,7 +251,7 @@ void data_handler(void)
 	}
 
 	if (PIR1bits.ADIF) { // ADC conversion complete flag
-		DLED2 = !DLED2;
+		DLED2 = S_ON;
 		PIR1bits.ADIF = LOW;
 		adc_count++; // just keep count
 		if (L.ctmu_data) {
@@ -233,19 +264,24 @@ void data_handler(void)
 			}
 			adc_buffer[L.adc_chan] = ADRES;
 		}
+		DLED2 = S_OFF;
 	}
 
 	/*
 	 * link delay looks to be about 130ns with short cables
 	 */
 	if (PIR3bits.CTMUIF) { // CTED (tx1) is high then CTED2 (rx2)went high
-		DLED4 = !DLED4;
-		PIE3bits.CTMUIE = LOW; // disable interrupt
 		PIR3bits.CTMUIF = LOW; // clear CTMU flag 
-		CTMUCONHbits.EDGEN = LOW;
-		CTMUCONLbits.EDG1STAT = 0; // Set Edge status bits to zero
-		CTMUCONLbits.EDG2STAT = 0;
-		ADCON0bits.GO = HIGH; // and begin A/D conv, will set adc int flag when done.
+		if (L.ctmu_data) {
+			ADCON0bits.GO = HIGH; // and begin A/D conv, will set adc int flag when done.
+			DLED4 = !DLED4;
+			CTMUCONHbits.CTMUEN = LOW;
+			CTMUICON = 0x00; // current off
+			PIE3bits.CTMUIE = LOW; // disable interrupt
+			CTMUCONHbits.EDGEN = LOW;
+			CTMUCONLbits.EDG1STAT = 0; // Set Edge status bits to zero
+			CTMUCONLbits.EDG2STAT = 0;
+		}
 	}
 
 	if (INTCONbits.RBIF) {
@@ -394,35 +430,62 @@ void wipe_data_eeprom(uint16_t max_eeprom)
  */
 void start_ctmu(void)
 {
-	// configure ADC for next reading
-	ADCON0bits.CHS = CTMU_CHAN; // Select ADC channel
-	PIR1bits.ADIF = LOW;
-	PIE1bits.ADIE = HIGH;
-	CTMUCONHbits.IDISSEN = HIGH; // start drain
-	wdtdelay(100); // time to drain the internal cap for measurements
-	PIR3bits.CTMUIF = LOW; // clear flag
-	CTMUCONHbits.IDISSEN = LOW; // end drain
 	L.ctmu_data = HIGH;
 	L.ctmu_data_temp = LOW;
+	ADCON0bits.CHS = CTMU_CHAN; // Select ADC channel
+	CTMUCONHbits.CTMUEN = LOW;
+	CTMUICON = 0x03; // 55uA
+	CTMUCONHbits.CTMUEN = HIGH;
+	CTMUCONHbits.IDISSEN = HIGH; // start drain
+	wdtdelay(100); // time to drain the internal cap for measurements
+	CTMUCONHbits.IDISSEN = LOW; // end drain
 	PIE3bits.CTMUIE = HIGH; //enable interrupt on edges
 	CTMUCONLbits.EDG1STAT = 0; // Set Edge status bits to zero
 	CTMUCONLbits.EDG2STAT = 0;
-	CTMUCONHbits.EDGEN = HIGH; // start looking at edges
+	CTMUCONHbits.EDGEN = HIGH; // start looking at external edges
 }
 
-void measure_chip_temp(void)
+uint16_t measure_chip_temp(uint8_t mode)
 {
-	ADCON0bits.CHS = TEMP_DIODE; // Select ADC channel
-	PIE3bits.CTMUIE = LOW; //disable interrupt on edges
-	CTMUCONLbits.EDG1STAT = 0; // Set Edge status bits to zero
-	CTMUCONLbits.EDG2STAT = 0;
-	CTMUCONHbits.EDGEN = HIGH; // start looking at edges
-	CTMUCONLbits.EDG1STAT = 1;
-	wdtdelay(100); // CTMU setup time before sampling
 	L.ctmu_data = LOW;
 	L.ctmu_data_temp = HIGH;
+	ADCON0bits.CHS = TEMP_DIODE; // Select ADC channel
+	CTMUCONHbits.CTMUEN = LOW;
+	if (mode) {
+		CTMUICON = 0x03; // 55uA CC
+	} else {
+		CTMUICON = 0x02; // 5.5uA CC
+	}
+	CTMUCONHbits.CTMUEN = HIGH;
+	CTMUCONHbits.IDISSEN = LOW; // end drain
+	PIE3bits.CTMUIE = LOW; // don't generate CTMU interrupts for edges
+	CTMUCONLbits.EDG1STAT = 0; // Set Edge status bits to zero
+	CTMUCONLbits.EDG2STAT = 0;
+	CTMUCONLbits.EDG1STAT = 1; // start current source
+	wdtdelay(20); // CTMU setup time before sampling
 	ADCON0bits.GO = 1; // Start conversion 
-	while (ADCON0bits.GO);
+	wdtdelay(20); // wait for ISR to update buffer
 	CTMUCONLbits.EDG1STAT = 0; // deactivate current source  
-	wdtdelay(100); // wait for ISR to update buffer
+	CTMUICON = 0x00; // current off
+	return L.pic_temp;
+}
+
+// Measure delta voltage across internal diode at two currents. 
+
+uint16_t inttemp_deltav(void)
+{
+	uint16_t v1, v2;
+
+	v1 = measure_chip_temp(HIGH);
+	v2 = measure_chip_temp(LOW);
+	// v1 will always be > v2 due to higher current 
+	return v1 - v2;
+}
+
+// Read current internal temperature 
+
+int16_t inttemp_read(void)
+{
+	// temperature = delta diode voltage * (1 / alpha) 
+	return((int32_t) inttemp_deltav() * calibration.alphad / calibration.alphan - ZERO_DEGC_IN_CENTIK) / 10;
 }
