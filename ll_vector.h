@@ -30,7 +30,11 @@ extern "C" {
 	int8_t start_tx1(void);
 	int8_t start_tx2(void);
 	void start_ctmu(void);
-	void measure_chip_temp(void);
+	uint16_t measure_chip_temp(uint8_t);
+	void inttemp_init(void);
+	uint16_t inttemp_deltav(void);
+	void inttemp_calibrate(int16_t);
+	int16_t inttemp_read(void);
 
 	void b0_on(void);
 	void b0_off(void);

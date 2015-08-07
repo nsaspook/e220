@@ -204,6 +204,8 @@ void config_pic(void)
 	/*
 	 * default operation mode
 	 */
+	inttemp_init();
+
 	L.rs232_mode = RS232_LL;
 	L.omode = LL_OPEN;
 	L.checksum = CHECKMARK_CRC;
@@ -389,7 +391,7 @@ void config_pic(void)
  */
 void main(void)
 {
-	int16_t i, j, k = 0;
+	uint16_t i, j, k = 0;
 	char bootstr1[32], bootstr2[32];
 
 	config_pic(); // setup the uC for work
@@ -442,12 +444,6 @@ void main(void)
 			SLED = HIGH;
 		}
 
-
-		for (i = 0; i < 1; i++) {
-			for (j = 0; j < 1; j++) {
-			}
-		}
-
 		if (!BLED0) {
 			start_ctmu();
 			ringBufS_put(L.tx2b, 0b000000000);
@@ -477,11 +473,14 @@ void main(void)
 
 
 		wdtdelay(1000);
-		measure_chip_temp();
+		//		i = measure_chip_temp(HIGH);
+		//		j = measure_chip_temp(LOW);
+		k = inttemp_read();
 
 		//		eaDogM_SetPos(0, 0);
 		//		eaDogM_Cls();
-		sprintf(bootstr1, "ADC %i %i        ", L.ctmu_adc, L.pic_temp);
+		//		sprintf(bootstr1, "ADC %i %i %i     ", L.ctmu_adc, i, j);
+		sprintf(bootstr1, "ADC %i %i       ", L.ctmu_adc, k);
 		eaDogM_WriteStringAtPos(0, 0, bootstr2);
 		eaDogM_WriteStringAtPos(1, 0, bootstr1);
 	}
