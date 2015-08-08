@@ -1,11 +1,11 @@
 #include "ll_vector.h"
 #include "ringbufs.h"
 
-/* two point calibration code from
- * https://www.ccsinfo.com/forum/viewtopic.php?p=173294
+/* two point temperature diode calibration code from
  * http://www.ti.com/lit/an/sbaa073a/sbaa073a.pdf
+ * https://www.ccsinfo.com/forum/viewtopic.php?p=173294
  */
-#define ZERO_DEGC_IN_CENTIK 27315 // centi-K = 0.01K units 
+#define ZERO_DEGC_IN_CENTIK 27315ul // centi-K = 0.01K units 
 
 struct {
 	// alpha numerator and denominator 
@@ -13,18 +13,20 @@ struct {
 	int32_t alphad; // 0.01K units 
 } calibration;
 
-// Initialize module 
-
-// 86F (30C) = alphan 126
+/* 
+ * Initialize module 
+ * 89.5F (31.9C) = alphan 293
+ */
 void inttemp_init(void)
 {
 	// arbitrary values 
-	calibration.alphan = 126;
-	calibration.alphad = 300 * 10 + ZERO_DEGC_IN_CENTIK;
+	calibration.alphan = 293;
+	calibration.alphad = 319 * 10 + ZERO_DEGC_IN_CENTIK;
 }
 
-// Single point calibration to assumed ambient temperature 
-
+/*
+ *  Single point calibration to assumed ambient temperature 
+ */
 void inttemp_calibrate(int16_t temperature)
 {
 	// alpha = delta diode voltage / temperature 
@@ -54,7 +56,6 @@ void b1_off(void)
 	L.omode = LL_OPEN;
 }
 
-//----------------------------------------------------------------------------
 // High priority interrupt routine
 #pragma	tmpdata	ISRHtmpdata
 #pragma interrupt data_handler   nosave=section (".tmpdata")
@@ -305,18 +306,21 @@ void data_handler(void)
 }
 #pragma	tmpdata
 
+// Low priority interrupt routine
 #pragma	tmpdata	ISRLtmpdata
 #pragma interruptlow work_handler   nosave=section (".tmpdata")
 
-void work_handler(void) // This is the low priority ISR routine, the high ISR routine will be called during this code section
+/*
+ *  This is the low priority ISR routine, the high ISR routine will be called during this code section
+ */
+void work_handler(void)
 {
 	static int8_t task = 0;
 
 	if (PIR1bits.TMR1IF) {
 
-		PIR1bits.TMR1IF = LOW; // clear TMR1 int flag
+		PIR1bits.TMR1IF = LOW; // clear TMR1 interrupt flag
 		WriteTimer1(PDELAY);
-
 		/*
 		 * task work stack
 		 */
@@ -340,7 +344,6 @@ void work_handler(void) // This is the low priority ISR routine, the high ISR ro
 			break;
 		}
 		task++;
-
 	}
 }
 #pragma	tmpdata
@@ -381,16 +384,16 @@ volatile void e_crit(void) // End section of code that need protection from ISR
 	INTCONbits.GIEL = HIGH;
 }
 
+/* 
+ * EEPROM data array: 0=MAGIC checksum, 1=length of array, 2=index into array data, 
+ * 3 = array offset, writes must be protected from ISR
+ */
 void write_data_eeprom(uint8_t data, uint8_t count, uint16_t addr, uint16_t offset)
 {
-	/* 
-	 * EEPROM data array: 0=MAGIC checksum, 1=length of array, 2=index into array data, 
-	 * 3 = array offset, writes must be protected from ISR
-	 */
 	if (addr == 0) { // only write header when on address 0
 		s_crit();
 		Busy_eep();
-		Write_b_eep(0 + offset, MAGIC); //      write data MAGIC at byte 0 of the offset
+		Write_b_eep(0 + offset, MAGIC); // write data MAGIC at byte 0 of the offset
 		Busy_eep();
 		Write_b_eep(1 + offset, count); // length of data
 		Busy_eep();
@@ -432,6 +435,7 @@ void start_ctmu(void)
 {
 	L.ctmu_data = HIGH;
 	L.ctmu_data_temp = LOW;
+	ADCON1bits.VCFG = 3; // Vref+ = 4.096
 	ADCON0bits.CHS = CTMU_CHAN; // Select ADC channel
 	CTMUCONHbits.CTMUEN = LOW;
 	CTMUICON = 0x03; // 55uA
@@ -445,16 +449,22 @@ void start_ctmu(void)
 	CTMUCONHbits.EDGEN = HIGH; // start looking at external edges
 }
 
+/*
+ * use the CTMU to measure the internal temp diode and return a voltage
+ * It's only good for about +- 1.0C resolution at best but it will work
+ * for time measurement calibration drift
+ */
 uint16_t measure_chip_temp(uint8_t mode)
 {
 	L.ctmu_data = LOW;
 	L.ctmu_data_temp = HIGH;
+	ADCON1bits.VCFG = 2; // Vref+ = 2.048
 	ADCON0bits.CHS = TEMP_DIODE; // Select ADC channel
 	CTMUCONHbits.CTMUEN = LOW;
 	if (mode) {
-		CTMUICON = 0x03; // 55uA CC
+		CTMUICON = 0b01111111; // 55uA CC max trim +62%
 	} else {
-		CTMUICON = 0x02; // 5.5uA CC
+		CTMUICON = 0b01111110; // 5.5uA CC max trim +62%
 	}
 	CTMUCONHbits.CTMUEN = HIGH;
 	CTMUCONHbits.IDISSEN = LOW; // end drain
@@ -470,22 +480,43 @@ uint16_t measure_chip_temp(uint8_t mode)
 	return L.pic_temp;
 }
 
-// Measure delta voltage across internal diode at two currents. 
-
+/* 
+ * Measure delta voltage across internal diode at two currents. 
+ */
 uint16_t inttemp_deltav(void)
 {
 	uint16_t v1, v2;
 
-	v1 = measure_chip_temp(HIGH);
-	v2 = measure_chip_temp(LOW);
-	// v1 will always be > v2 due to higher current 
-	return v1 - v2;
+	v1 = (uint16_t) lp_filter((float) measure_chip_temp(LOW), 1, HIGH);
+	v2 = (uint16_t) lp_filter((float) measure_chip_temp(HIGH), 2, HIGH);
+	return v2 - v1;
 }
 
-// Read current internal temperature 
-
+/* 
+ * Read current internal temperature in 0.1C
+ */
 int16_t inttemp_read(void)
 {
 	// temperature = delta diode voltage * (1 / alpha) 
-	return((int32_t) inttemp_deltav() * calibration.alphad / calibration.alphan - ZERO_DEGC_IN_CENTIK) / 10;
+	return((int32_t) inttemp_deltav() * (int32_t) calibration.alphad / (int32_t) calibration.alphan - ZERO_DEGC_IN_CENTIK) / 10;
+}
+
+float lp_filter(float new, uint8_t bn, int8_t slow)
+{
+	static float smooth[4] = {0.0}, lp_speed = 0.0, lp_x = 0.0;
+
+	if (bn >= 4) // end of the filter array so just return passed value
+		return new;
+	if (slow) {
+		lp_speed = 0.01;
+	} else {
+		lp_speed = 0.125;
+	}
+	lp_x = ((smooth[bn]*100.0) + (((new * 100.0)-(smooth[bn]*100.0)) * lp_speed)) / 100.0;
+	smooth[bn] = lp_x;
+	if (slow == (-1)) { // reset and return zero
+		lp_x = 0.0;
+		smooth[bn] = 0.0;
+	}
+	return lp_x;
 }
