@@ -49,8 +49,8 @@
  * 3	aux	AUX device chip select
  * 4	csb	LCD chip select
  * 5	rs	LCD data/command select
- * 6	moso	SPI data transmit
- * 7	mosi	SPI data receive
+ * 6	msdo	SPI data transmit
+ * 7	msdi	SPI data receive
  * 8	sck	SPI clock
  * 9	vcc	+5vdc system power
  * 10	gnd	power/signal ground
