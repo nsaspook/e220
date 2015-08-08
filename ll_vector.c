@@ -269,7 +269,7 @@ void data_handler(void)
 	}
 
 	/*
-	 * link delay looks to be about 130ns with short cables
+	 * trigger the ADC here
 	 */
 	if (PIR3bits.CTMUIF) { // CTED (tx1) is high then CTED2 (rx2)went high
 		PIR3bits.CTMUIF = LOW; // clear CTMU flag 
