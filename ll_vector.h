@@ -35,6 +35,7 @@ extern "C" {
 	uint16_t inttemp_deltav(void);
 	void inttemp_calibrate(int16_t);
 	int16_t inttemp_read(void);
+	float lp_filter(float, uint8_t, int8_t);
 
 	void b0_on(void);
 	void b0_off(void);

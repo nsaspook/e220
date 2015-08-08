@@ -473,14 +473,15 @@ void main(void)
 
 
 		wdtdelay(1000);
-		//		i = measure_chip_temp(HIGH);
-		//		j = measure_chip_temp(LOW);
+		i = measure_chip_temp(HIGH);
+		j = measure_chip_temp(LOW);
 		k = inttemp_read();
+		k = (uint16_t) lp_filter((float) k, 0, TRUE);
 
 		//		eaDogM_SetPos(0, 0);
 		//		eaDogM_Cls();
 		//		sprintf(bootstr1, "ADC %i %i %i     ", L.ctmu_adc, i, j);
-		sprintf(bootstr1, "ADC %i %i       ", L.ctmu_adc, k);
+		sprintf(bootstr1, "ADC %i %i %i      ", L.ctmu_adc, k, i - j);
 		eaDogM_WriteStringAtPos(0, 0, bootstr2);
 		eaDogM_WriteStringAtPos(1, 0, bootstr1);
 	}
