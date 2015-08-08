@@ -285,7 +285,7 @@ void data_handler(void)
 		}
 	}
 
-	if (INTCONbits.RBIF) {
+	if (INTCONbits.RBIF) {https://github.com/nsaspook/e220.git
 		b_data = PORTB;
 		INTCONbits.RBIF = LOW;
 	}
