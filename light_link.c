@@ -2,6 +2,8 @@
 /* 
  * LLLT
  *
+ * mplab options: use the c018iz_e.o zeroing version of the CRUNTIME in the LKR file
+ * 
  * spam@sma2.rain.com   Jul 2015
  * 
  * General I/O
@@ -40,6 +42,18 @@
  * 6 sw1
  * 7
  * 8
+ * 
+ * External Device Connector
+ * 1	sw0	contact closure to ground
+ * 2	sw1	contact closure to ground
+ * 3	aux	AUX device chip select
+ * 4	csb	LCD chip select
+ * 5	rs	LCD data/command select
+ * 6	moso	SPI data transmit
+ * 7	mosi	SPI data receive
+ * 8	sck	SPI clock
+ * 9	vcc	+5vdc system power
+ * 10	gnd	power/signal ground
  */
 
 #ifdef P45K80
