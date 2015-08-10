@@ -397,12 +397,81 @@ void config_pic(void) {
     BLED1 = S_OFF;
 }
 
+void loop_test(void) {
+    start_ctmu();
+    ringBufS_put(L.tx2b, 0b000000000);
+    ringBufS_put(L.tx2b, 0b111111111);
+    ringBufS_put(L.tx2b, 0b011111111);
+    ringBufS_put(L.tx2b, 0b111111111);
+    ringBufS_put(L.tx2b, 0b011111111);
+    ringBufS_put(L.tx2b, 0b111111111);
+    ringBufS_put(L.tx2b, 0b011111111);
+    ringBufS_put(L.tx2b, 0b111111111);
+    ringBufS_put(L.tx2b, 0b000000000);
+
+    ringBufS_put(L.tx1b, 0b000000000);
+    ringBufS_put(L.tx1b, 0b111111111);
+    ringBufS_put(L.tx1b, 0b011111111);
+    ringBufS_put(L.tx1b, 0b111111111);
+    ringBufS_put(L.tx1b, 0b011111111);
+    ringBufS_put(L.tx1b, 0b111111111);
+    ringBufS_put(L.tx1b, 0b011111111);
+    ringBufS_put(L.tx1b, 0b111111111);
+    ringBufS_put(L.tx1b, 0b000000000);
+
+    start_tx1();
+    start_tx2();
+    while (!ringBufS_empty(L.tx1b));
+}
+
+int16_t addr_test(void) {
+    uint8_t dcount;
+
+    ringBufS_flush(L.tx1b, 0);
+    ringBufS_flush(L.rx1b, 0);
+    for (dcount = 0; dcount <= 255; dcount++) { // run address search
+        start_ctmu();
+        ringBufS_put(L.tx1b, 0b000000000);
+        ringBufS_put(L.tx1b, dcount | 0x100);
+        ringBufS_put(L.tx1b, 0b000000001);
+        ringBufS_put(L.tx1b, 0b000000010);
+        ringBufS_put(L.tx1b, 0b000000011);
+        ringBufS_put(L.tx1b, 0b000000100);
+        ringBufS_put(L.tx1b, 0b000000101);
+        ringBufS_put(L.tx1b, 0b000000110);
+        ringBufS_put(L.tx1b, 0b000000111);
+        start_tx1();
+        wdtdelay(1);
+        while (!ringBufS_empty(L.tx1b));
+
+        if (!ringBufS_empty(L.rx1b)) {
+            return dcount;
+        }
+    }
+    return -1;
+}
+
+int16_t data_test(uint16_t addr) {
+    uint8_t dcount;
+
+    ringBufS_flush(L.tx1b, 0);
+    ringBufS_flush(L.rx1b, 0);
+    for (dcount = 0; dcount <= 255; dcount++) { // run data search
+        ringBufS_put(L.tx1b, addr | 0x100);
+        ringBufS_put(L.tx1b, dcount & 0x00ff);
+        start_tx1();
+        while (!ringBufS_empty(L.tx1b));
+        wdtdelay(1);
+    }
+    return 0;
+}
+
 /*
  * Light Link Loop Tester
  */
 void main(void) {
-    uint16_t i, j, k = 0;
-    char bootstr1[32], bootstr2[32];
+    uint16_t i, j, k = 0, l = 0;
+    char bootstr1[20], bootstr2[20], bootstr3[20];
 
     config_pic(); // setup the uC for work
 
@@ -429,6 +498,7 @@ void main(void) {
         eaDogM_WriteString(bootstr2);
         eaDogM_SetPos(2, 0);
         eaDogM_WriteString(bootstr2);
+        wdtdelay(1000000); // long error display
     } else {
         strncpypgm2ram(bootstr2, build_time, 16);
         eaDogM_WriteString(bootstr2);
@@ -455,30 +525,11 @@ void main(void) {
         }
 
         if (!BLED0) {
-            start_ctmu();
-            ringBufS_put(L.tx2b, 0b000000000);
-            ringBufS_put(L.tx2b, 0b111111111);
-            ringBufS_put(L.tx2b, 0b011111111);
-            ringBufS_put(L.tx2b, 0b111111111);
-            ringBufS_put(L.tx2b, 0b011111111);
-            ringBufS_put(L.tx2b, 0b111111111);
-            ringBufS_put(L.tx2b, 0b011111111);
-            ringBufS_put(L.tx2b, 0b111111111);
-            ringBufS_put(L.tx2b, 0b000000000);
-
-            ringBufS_put(L.tx1b, 0b000000000);
-            ringBufS_put(L.tx1b, 0b111111111);
-            ringBufS_put(L.tx1b, 0b011111111);
-            ringBufS_put(L.tx1b, 0b111111111);
-            ringBufS_put(L.tx1b, 0b011111111);
-            ringBufS_put(L.tx1b, 0b111111111);
-            ringBufS_put(L.tx1b, 0b011111111);
-            ringBufS_put(L.tx1b, 0b111111111);
-            ringBufS_put(L.tx1b, 0b000000000);
-
-            start_tx1();
-            start_tx2();
-            while (!ringBufS_empty(L.tx1b));
+            //            loop_test();
+            l = addr_test();
+            sprintf(bootstr3, " ID %x     ", l);
+            eaDogM_WriteStringAtPos(2, 0, bootstr3);
+            data_test(l);
         }
 
 
@@ -494,6 +545,8 @@ void main(void) {
         sprintf(bootstr1, "ADC %i %i %i      ", L.ctmu_adc, k, i - j);
         eaDogM_WriteStringAtPos(0, 0, bootstr2);
         eaDogM_WriteStringAtPos(1, 0, bootstr1);
+        sprintf(bootstr3, " ID %x          ", l);
+        eaDogM_WriteStringAtPos(2, 0, bootstr3);
     }
 
 }
