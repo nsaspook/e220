@@ -59,8 +59,9 @@ extern "C" {
 
 #define SLED			LATEbits.LATE0
 #define RS			LATEbits.LATE1
+	
 #define CSB			LATEbits.LATE2
-#define CSA			LATAbits.LATA7
+#define CSA			LATBbits.LATB4  // changed from A7 so we can use B4 as a interrupt on change service request line
 
 #define TEMP_DIODE		29	// internal chip temperature diode
 #define CTMU_CHAN		28	// mux disconnected for lowest possible measurement capacitor
