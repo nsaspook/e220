@@ -110,6 +110,7 @@ void data_handler(void)
 			}
 		}
 		if (spi_link.SPI_AUX) {
+			TRISBbits.TRISB4=LOW; // config it for a slave select
 			CSA = LOW; // select the AUX SPI receiver
 		}
 	}
@@ -288,6 +289,11 @@ void data_handler(void)
 	if (INTCONbits.RBIF) {
 		b_data = PORTB;
 		INTCONbits.RBIF = LOW;
+		if (TRISBbits.TRISB4) { // looking for requests
+			if (PORTBbits.RB4) {
+				// do something to service the SPI slave request
+			}
+		}
 	}
 
 	if (INTCONbits.INT0IF) {
