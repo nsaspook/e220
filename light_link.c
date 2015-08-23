@@ -177,6 +177,7 @@ volatile union Timers timer_long;
 volatile hidtype hid0 = {0, 0, 0, b0_on, b0_off},
 hid1 = {0, 0, 0, b1_on, b1_off};
 volatile hidtype *hid0_ptr = &hid0, *hid1_ptr = &hid1;
+struct link_buffer_type psc_data;
 #pragma udata 
 
 //High priority interrupt vector, placed at address HIGH_VECTOR

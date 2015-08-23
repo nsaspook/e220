@@ -38,6 +38,10 @@ typedef enum {
 	RS232_HH, RS232_LL
 } level_t;
 
+struct link_buffer_type {
+	uint8_t stream[LINK_B_SIZE];
+};
+
 struct spi_link_type { // internal state table
 	uint8_t SPI_LCD : 1;
 	uint8_t SPI_AUX : 1;

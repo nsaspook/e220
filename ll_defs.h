@@ -17,6 +17,7 @@ extern "C" {
 #define LOW_VECTOR		0x18            // ISR low address
 #define HIGH_VECTOR		0x8             // ISR high address
 
+#define LINK_B_SIZE	128
 #define BAUD_FAST		41 // 375000 BPS is 41, high speed testing is 2
 #define BAUD_SLOW		0
 
@@ -59,7 +60,7 @@ extern "C" {
 
 #define SLED			LATEbits.LATE0
 #define RS			LATEbits.LATE1
-	
+
 #define CSB			LATEbits.LATE2
 #define CSA			LATBbits.LATB4  // changed from A7 so we can use B4 as a interrupt on change service request line
 
