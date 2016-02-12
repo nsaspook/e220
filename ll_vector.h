@@ -49,10 +49,10 @@ extern "C" {
 	extern volatile struct llflagtype ll_flag;
 	extern volatile int16_t tx_tmp, rx_tmp;
 	extern volatile uint32_t adc_count, adc_error_count,
-			slave_int_count, last_slave_int_count;
+		slave_int_count, last_slave_int_count;
 	extern volatile struct spi_link_type spi_link;
 	extern volatile uint8_t data_in2, adc_buffer_ptr,
-			adc_channel;
+		adc_channel;
 	extern volatile uint16_t adc_buffer[4], adc_data_in;
 	extern volatile hidtype *hid0_ptr, *hid1_ptr;
 #ifdef	__cplusplus

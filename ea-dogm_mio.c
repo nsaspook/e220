@@ -105,7 +105,7 @@
 
 
 #ifndef EADOGM_SPI
-   #define EADOGM_SPI 1
+#define EADOGM_SPI 1
 
 // some special symbol chrs defined
 #define EADMSYM_DEG     0b11011111     // degree symbol
@@ -121,75 +121,75 @@
 
 // we noticed some issues with GLOBAL on pic24 devices
 #ifndef GLOBAL
-  #define GLOBAL INTR_GLOBAL
+#define GLOBAL INTR_GLOBAL
 #endif
 
 
 // 1x16
 #ifdef EADOGM081
-   #define EADOGM_ROWS 1
-   #if EADOGMVDD == 5
-     #define EADOGM_INIT_BIAS_SET 0x1C
-     #define EADOGM_INIT_POWER_CONTROL 0x51
-     #define EADOGM_INIT_FOLLOWER_CONTROL 0x6A
-     #define EADOGM_INIT_CONTRAST_SET 0x74
-   #else
-     #define EADOGM_INIT_BIAS_SET 0x14
-     #define EADOGM_INIT_POWER_CONTROL 0x55
-     #define EADOGM_INIT_FOLLOWER_CONTROL 0x6D
-     #define EADOGM_INIT_CONTRAST_SET 0x7C
-   #endif
+#define EADOGM_ROWS 1
+#if EADOGMVDD == 5
+#define EADOGM_INIT_BIAS_SET 0x1C
+#define EADOGM_INIT_POWER_CONTROL 0x51
+#define EADOGM_INIT_FOLLOWER_CONTROL 0x6A
+#define EADOGM_INIT_CONTRAST_SET 0x74
+#else
+#define EADOGM_INIT_BIAS_SET 0x14
+#define EADOGM_INIT_POWER_CONTROL 0x55
+#define EADOGM_INIT_FOLLOWER_CONTROL 0x6D
+#define EADOGM_INIT_CONTRAST_SET 0x7C
+#endif
 
-   #define EADOGM_INIT_FS1 0x31
-   #define EADOGM_INIT_FS2 0x30
-   #define EADOGM_INIT_CLEAR_DISPLAY 0x01
-   #define EADOGM_INIT_ENTRY_MODE 0x06
-   #define EADOGM_COLSPAN 16
+#define EADOGM_INIT_FS1 0x31
+#define EADOGM_INIT_FS2 0x30
+#define EADOGM_INIT_CLEAR_DISPLAY 0x01
+#define EADOGM_INIT_ENTRY_MODE 0x06
+#define EADOGM_COLSPAN 16
 #endif
 
 
 // 2x16
 #ifdef EADOGM162
-   #define EADOGM_ROWS 2
-    #if EADOGMVDD == 5
-     #define EADOGM_INIT_BIAS_SET 0x1C
-     #define EADOGM_INIT_POWER_CONTROL 0x52
-     #define EADOGM_INIT_FOLLOWER_CONTROL 0x69
-     #define EADOGM_INIT_CONTRAST_SET 0x74
-   #else
-     #define EADOGM_INIT_BIAS_SET 0x14
-     #define EADOGM_INIT_POWER_CONTROL 0x55
-     #define EADOGM_INIT_FOLLOWER_CONTROL 0x6D
-     #define EADOGM_INIT_CONTRAST_SET 0x78
-   #endif
+#define EADOGM_ROWS 2
+#if EADOGMVDD == 5
+#define EADOGM_INIT_BIAS_SET 0x1C
+#define EADOGM_INIT_POWER_CONTROL 0x52
+#define EADOGM_INIT_FOLLOWER_CONTROL 0x69
+#define EADOGM_INIT_CONTRAST_SET 0x74
+#else
+#define EADOGM_INIT_BIAS_SET 0x14
+#define EADOGM_INIT_POWER_CONTROL 0x55
+#define EADOGM_INIT_FOLLOWER_CONTROL 0x6D
+#define EADOGM_INIT_CONTRAST_SET 0x78
+#endif
 
-   #define EADOGM_INIT_FS1 0x39
-   #define EADOGM_INIT_FS2 0x38
-   #define EADOGM_INIT_CLEAR_DISPLAY 0x01
-   #define EADOGM_INIT_ENTRY_MODE 0x06
-   #define EADOGM_COLSPAN 40  // suggested that this be 40 on model 162
+#define EADOGM_INIT_FS1 0x39
+#define EADOGM_INIT_FS2 0x38
+#define EADOGM_INIT_CLEAR_DISPLAY 0x01
+#define EADOGM_INIT_ENTRY_MODE 0x06
+#define EADOGM_COLSPAN 40  // suggested that this be 40 on model 162
 #endif
 
 // 3x16
 #ifdef EADOGM163
-   #define EADOGM_ROWS 3
-    #if EADOGMVDD == 5
-     #define EADOGM_INIT_BIAS_SET 0x1D
-     #define EADOGM_INIT_POWER_CONTROL 0x50
-     #define EADOGM_INIT_FOLLOWER_CONTROL 0x6C
-     #define EADOGM_INIT_CONTRAST_SET 0x7C
-   #else
-     #define EADOGM_INIT_BIAS_SET 0x15
-     #define EADOGM_INIT_POWER_CONTROL 0x55
-     #define EADOGM_INIT_FOLLOWER_CONTROL 0x6E
-     #define EADOGM_INIT_CONTRAST_SET 0x72
-   #endif
+#define EADOGM_ROWS 3
+#if EADOGMVDD == 5
+#define EADOGM_INIT_BIAS_SET 0x1D
+#define EADOGM_INIT_POWER_CONTROL 0x50
+#define EADOGM_INIT_FOLLOWER_CONTROL 0x6C
+#define EADOGM_INIT_CONTRAST_SET 0x7C
+#else
+#define EADOGM_INIT_BIAS_SET 0x15
+#define EADOGM_INIT_POWER_CONTROL 0x55
+#define EADOGM_INIT_FOLLOWER_CONTROL 0x6E
+#define EADOGM_INIT_CONTRAST_SET 0x72
+#endif
 
-   #define EADOGM_INIT_FS1 0x39
-   #define EADOGM_INIT_FS2 0x38
-   #define EADOGM_INIT_CLEAR_DISPLAY 0x01
-   #define EADOGM_INIT_ENTRY_MODE 0x06
-   #define EADOGM_COLSPAN 16
+#define EADOGM_INIT_FS1 0x39
+#define EADOGM_INIT_FS2 0x38
+#define EADOGM_INIT_CLEAR_DISPLAY 0x01
+#define EADOGM_INIT_ENTRY_MODE 0x06
+#define EADOGM_COLSPAN 16
 #endif
 
 
@@ -207,51 +207,50 @@
 
 // spi hw clock div, v2.03 fix
 #ifndef EADOGM_SPI_DIV
-   #define EADOGM_SPI_DIV SPI_CLK_DIV_4
+#define EADOGM_SPI_DIV SPI_CLK_DIV_4
 #endif
 
 
 
 // sw spi emulation routine (bit bang)
 #ifdef EADOGM_SPI_SW
-   #ifndef EADOGM_SCLK_BB
-     #define EADOGM_SCLK_BB PIN_C3
-   #endif
-   #ifndef EADOGM_MOSI_BB
-     #define EADOGM_MOSI_BB PIN_C5
-   #endif
-
+#ifndef EADOGM_SCLK_BB
+#define EADOGM_SCLK_BB PIN_C3
+#endif
+#ifndef EADOGM_MOSI_BB
+#define EADOGM_MOSI_BB PIN_C5
+#endif
 
 void eaDogM_iniSPI_BB(void)
 {
-   output_drive(EADOGM_SCLK_BB);
-   output_drive(EADOGM_MOSI_BB);
-   output_low(EADOGM_SCLK_BB);
-   output_low(EADOGM_MOSI_BB);
+	output_drive(EADOGM_SCLK_BB);
+	output_drive(EADOGM_MOSI_BB);
+	output_low(EADOGM_SCLK_BB);
+	output_low(EADOGM_MOSI_BB);
 }
 
 void eaDogM_spiWrite_BB(int8 regData)
 {
 
-  int1 bitOut;
-  int8 SPICount;                               // Counter used to clock out the data
-  int8 SPIData;                                // Define a data structure for the SPI data.
+	int1 bitOut;
+	int8 SPICount; // Counter used to clock out the data
+	int8 SPIData; // Define a data structure for the SPI data.
 
-  output_low(EADOGM_SCLK_BB);                         // and CK low
+	output_low(EADOGM_SCLK_BB); // and CK low
 
-  SPIData = regData;
-  for (SPICount = 0; SPICount < 8; SPICount++) // Prepare to clock out the Address byte
-    {
-    bitOut = bit_test(SPIData,7);
-    output_bit(EADOGM_MOSI_BB,bitOut);
-    output_high(EADOGM_SCLK_BB);                      // Toggle the clock line
-    //delay_us(10);
-    output_low(EADOGM_SCLK_BB);
-    //delay_us(10);
-    SPIData = SPIData << 1;                    // Rotate to get the next bit
-    }                                          // and loop back to send the next bit
+	SPIData = regData;
+	for (SPICount = 0; SPICount < 8; SPICount++) // Prepare to clock out the Address byte
+	{
+		bitOut = bit_test(SPIData, 7);
+		output_bit(EADOGM_MOSI_BB, bitOut);
+		output_high(EADOGM_SCLK_BB); // Toggle the clock line
+		//delay_us(10);
+		output_low(EADOGM_SCLK_BB);
+		//delay_us(10);
+		SPIData = SPIData << 1; // Rotate to get the next bit
+	} // and loop back to send the next bit
 
-  output_low(EADOGM_MOSI_BB);
+	output_low(EADOGM_MOSI_BB);
 }
 
 // wrapper for sw spi calls in main program
@@ -262,29 +261,30 @@ void eaDogM_spiWrite_BB(int8 regData)
 // wrapper for hw spi calls in main program
 // v2.01 moved to a macro define
 #if EADOGM_SPI_HW == 1
-   #define eaDogM_outSPI(c) spi_write(c)
+#define eaDogM_outSPI(c) spi_write(c)
 #endif
 
 // wrapper for hw2 spi calls in main program
 // v2.01 moved to a macro define, v2.03 using EADOGM_SPI_HW to test condition
 #if EADOGM_SPI_HW == 2
-   #define eaDogM_outSPI(c) spi_write2(c)
+#define eaDogM_outSPI(c) spi_write2(c)
 #endif
 
 
 #ifdef EADOGM_8BIT
+
 void eaDogM_ini8Bit(void)
 {
 #ifndef EADOGM_NOCSB
-   output_drive(EADOGM_PIN_CSB);
-   output_high(EADOGM_PIN_CSB);
+	output_drive(EADOGM_PIN_CSB);
+	output_high(EADOGM_PIN_CSB);
 #endif
-   output_drive(EADOGM_PIN_E);
-   output_drive(EADOGM_PIN_RW);
-   output_drive(EADOGM_PIN_RS);
-   output_low(EADOGM_PIN_E);
-   output_low(EADOGM_PIN_RS);
-   output_low(EADOGM_PIN_RW);
+	output_drive(EADOGM_PIN_E);
+	output_drive(EADOGM_PIN_RW);
+	output_drive(EADOGM_PIN_RS);
+	output_low(EADOGM_PIN_E);
+	output_low(EADOGM_PIN_RS);
+	output_low(EADOGM_PIN_RW);
 }
 #endif
 
@@ -292,101 +292,102 @@ void eaDogM_ini8Bit(void)
 
 #ifdef EADOGM_8BIT
 // 8bit mode
+
 void eaDogM_WriteChr(char value)
 {
-   output_high(EADOGM_PIN_RS);
-   output_low(EADOGM_PIN_RW);
-   output_low(EADOGM_PIN_E);
-   #ifndef EADOGM_NOCSB
-     output_low(EADOGM_PIN_CSB);
-     #endif
-   output_high(EADOGM_PIN_E);
-   delay_ms(1);
-   EADOGM_8BIT_PORT(value);
-   output_low(EADOGM_PIN_E);
-   delay_ms(1);
-   #ifndef EADOGM_NOCSB
-     output_low(EADOGM_PIN_CSB);
-     #endif
-   delay_ms(1);
+	output_high(EADOGM_PIN_RS);
+	output_low(EADOGM_PIN_RW);
+	output_low(EADOGM_PIN_E);
+#ifndef EADOGM_NOCSB
+	output_low(EADOGM_PIN_CSB);
+#endif
+	output_high(EADOGM_PIN_E);
+	delay_ms(1);
+	EADOGM_8BIT_PORT(value);
+	output_low(EADOGM_PIN_E);
+	delay_ms(1);
+#ifndef EADOGM_NOCSB
+	output_low(EADOGM_PIN_CSB);
+#endif
+	delay_ms(1);
 }
 
 void eaDogM_WriteCommand(int8 cmd)
 {
-   output_low(EADOGM_PIN_RS);
-   output_low(EADOGM_PIN_RW);
-   output_low(EADOGM_PIN_E);
-   #ifndef EADOGM_NOCSB
-     output_low(EADOGM_PIN_CSB);
-     #endif
-   output_high(EADOGM_PIN_E);
-   delay_ms(1);
-   EADOGM_8BIT_PORT(cmd);
-   output_low(EADOGM_PIN_E);
-   delay_ms(1);
-   #ifndef EADOGM_NOCSB
-     output_low(EADOGM_PIN_CSB);
-     #endif
-   delay_ms(1);
+	output_low(EADOGM_PIN_RS);
+	output_low(EADOGM_PIN_RW);
+	output_low(EADOGM_PIN_E);
+#ifndef EADOGM_NOCSB
+	output_low(EADOGM_PIN_CSB);
+#endif
+	output_high(EADOGM_PIN_E);
+	delay_ms(1);
+	EADOGM_8BIT_PORT(cmd);
+	output_low(EADOGM_PIN_E);
+	delay_ms(1);
+#ifndef EADOGM_NOCSB
+	output_low(EADOGM_PIN_CSB);
+#endif
+	delay_ms(1);
 }
 #else
 // spi mode
+
 void eaDogM_WriteChr(char value)
 {
-   output_high(EADOGM_PIN_RS);
-   output_low(EADOGM_PIN_CSB);
-   eaDogM_outSPI(value);
-   output_high(EADOGM_PIN_CSB);
-   delay_ms(1);
+	output_high(EADOGM_PIN_RS);
+	output_low(EADOGM_PIN_CSB);
+	eaDogM_outSPI(value);
+	output_high(EADOGM_PIN_CSB);
+	delay_ms(1);
 }
 
 void eaDogM_WriteCommand(int8 cmd)
 {
-   output_low(EADOGM_PIN_RS);
-   output_low(EADOGM_PIN_CSB);
-   eaDogM_outSPI(cmd);
-   output_high(EADOGM_PIN_CSB);
-   delay_ms(1);
+	output_low(EADOGM_PIN_RS);
+	output_low(EADOGM_PIN_CSB);
+	eaDogM_outSPI(cmd);
+	output_high(EADOGM_PIN_CSB);
+	delay_ms(1);
 }
 #endif
-
 
 void eaDogM_Initialize(void)
 {
 
-// v2.03 fix
+	// v2.03 fix
 #if EADOGM_SPI_HW  == 1
-   setup_spi( SPI_MASTER | SPI_H_TO_L | EADOGM_SPI_DIV );
+	setup_spi(SPI_MASTER | SPI_H_TO_L | EADOGM_SPI_DIV);
 #endif
 
-// v2.03 fix
+	// v2.03 fix
 #if EADOGM_SPI_HW  == 2
-   setup_spi2( SPI_MASTER | SPI_H_TO_L | EADOGM_SPI_DIV );
+	setup_spi2(SPI_MASTER | SPI_H_TO_L | EADOGM_SPI_DIV);
 #endif
 
 #ifdef EADOGM_SPI_SW
-   eaDogM_iniSPI_BB();
+	eaDogM_iniSPI_BB();
 #endif
 
 #ifdef EADOGM_8BIT
-   eaDogM_ini8Bit();
+	eaDogM_ini8Bit();
 #else
-   output_drive(EADOGM_PIN_CSB);
-   output_drive(EADOGM_PIN_RS);
-   output_high(EADOGM_PIN_CSB);
-   output_high(EADOGM_PIN_RS);
+	output_drive(EADOGM_PIN_CSB);
+	output_drive(EADOGM_PIN_RS);
+	output_high(EADOGM_PIN_CSB);
+	output_high(EADOGM_PIN_RS);
 #endif
 
-   delay_ms(200);
+	delay_ms(200);
 
-   eaDogM_WriteCommand(EADOGM_INIT_FS1);
-   eaDogM_WriteCommand(EADOGM_INIT_BIAS_SET);
-   eaDogM_WriteCommand(EADOGM_INIT_POWER_CONTROL);
-   eaDogM_WriteCommand(EADOGM_INIT_FOLLOWER_CONTROL);
-   eaDogM_WriteCommand(EADOGM_INIT_CONTRAST_SET);
-   eaDogM_WriteCommand(EADOGM_INIT_FS2);
-   eaDogM_WriteCommand(EADOGM_INIT_CLEAR_DISPLAY);
-   eaDogM_WriteCommand(EADOGM_INIT_ENTRY_MODE);
+	eaDogM_WriteCommand(EADOGM_INIT_FS1);
+	eaDogM_WriteCommand(EADOGM_INIT_BIAS_SET);
+	eaDogM_WriteCommand(EADOGM_INIT_POWER_CONTROL);
+	eaDogM_WriteCommand(EADOGM_INIT_FOLLOWER_CONTROL);
+	eaDogM_WriteCommand(EADOGM_INIT_CONTRAST_SET);
+	eaDogM_WriteCommand(EADOGM_INIT_FS2);
+	eaDogM_WriteCommand(EADOGM_INIT_CLEAR_DISPLAY);
+	eaDogM_WriteCommand(EADOGM_INIT_ENTRY_MODE);
 
 }
 
@@ -397,17 +398,18 @@ void eaDogM_Initialize(void)
 
 // only tested on 3 line display at the moment,
 // thus no constants defined. when fully tested, I will define them
+
 void eaDogM_DoubleHeight(int8 row) // row 0 or 1
 {
-   eaDogM_WriteCommand(EADOGM_CMD_SET_TABLE2); // set instruction table 2
-   if (row == 0) {
-     eaDogM_WriteCommand(EADOGM_CMD_SELECT_R0); // select row 0
-     }
-   if (row == 1) {
-     eaDogM_WriteCommand(EADOGM_CMD_SELECT_R1); // select row 1
-     }
-   eaDogM_WriteCommand(0b00101100); // turns on double line mode
-                                    // and set instruction table back to 0
+	eaDogM_WriteCommand(EADOGM_CMD_SET_TABLE2); // set instruction table 2
+	if (row == 0) {
+		eaDogM_WriteCommand(EADOGM_CMD_SELECT_R0); // select row 0
+	}
+	if (row == 1) {
+		eaDogM_WriteCommand(EADOGM_CMD_SELECT_R1); // select row 1
+	}
+	eaDogM_WriteCommand(0b00101100); // turns on double line mode
+	// and set instruction table back to 0
 }
 
 // v2.01 moved functions to macros
@@ -418,77 +420,79 @@ void eaDogM_DoubleHeight(int8 row) // row 0 or 1
 #define eaDogM_DisplayOn()       eaDogM_WriteCommand(EADOGM_CMD_DISPLAY_ON)
 #define eaDogM_DisplayOff()      eaDogM_WriteCommand(EADOGM_CMD_DISPLAY_OFF)
 
-
 void eaDogM_SetPos(int8 r, int8 c)
 {
-   int8 cmdPos;
-   cmdPos = EADOGM_CMD_DDRAM_ADDR + (r * EADOGM_COLSPAN) + c;
-   eaDogM_WriteCommand(cmdPos);
+	int8 cmdPos;
+	cmdPos = EADOGM_CMD_DDRAM_ADDR + (r * EADOGM_COLSPAN) + c;
+	eaDogM_WriteCommand(cmdPos);
 }
 
 void eaDogM_ClearRow(int8 r)
 {
-   int8 i;
-   eaDogM_SetPos(r,0);
-   for(i=0; i<EADOGM_COLSPAN; i++) {
-     eaDogM_WriteChr(' ');
-   }
+	int8 i;
+	eaDogM_SetPos(r, 0);
+	for (i = 0; i < EADOGM_COLSPAN; i++) {
+		eaDogM_WriteChr(' ');
+	}
 }
 
 void eaDogM_WriteString(char *strPtr)
 {
-   printf(eaDogM_WriteChr,"%s",strPtr);
+	printf(eaDogM_WriteChr, "%s", strPtr);
 }
 
 
 // Optional DisGIE, set to 1 to disable interrupts
 // v1.4 -- provided by Imaginos
-void eaDogM_WriteStringAtPos(int8 r, int8 c, char *strPtr, int1 DisGIE=0)
+
+void eaDogM_WriteStringAtPos(int8 r, int8 c, char *strPtr, int1 DisGIE = 0)
 {
-   if (DisGIE) {
-      disable_interrupts(GLOBAL);
-      }
+	if (DisGIE) {
+		disable_interrupts(GLOBAL);
+	}
 
-   eaDogM_WriteCommand((EADOGM_CMD_DDRAM_ADDR + (r * EADOGM_COLSPAN) + c));
-   printf(eaDogM_WriteChr,"%s",strPtr);
+	eaDogM_WriteCommand((EADOGM_CMD_DDRAM_ADDR + (r * EADOGM_COLSPAN) + c));
+	printf(eaDogM_WriteChr, "%s", strPtr);
 
-   if (DisGIE) {
-      enable_interrupts(GLOBAL);
-      }
+	if (DisGIE) {
+		enable_interrupts(GLOBAL);
+	}
 }
 
 // Optional DisGIE, set to 1 to disable interrupts
 // v1.4 -- provided by Imaginos
-void eaDogM_WriteIntAtPos(int8 r, int8 c, int8 i, int1 DisGIE=0)
+
+void eaDogM_WriteIntAtPos(int8 r, int8 c, int8 i, int1 DisGIE = 0)
 {
-   if (DisGIE) {
-      disable_interrupts(GLOBAL);
-      }
+	if (DisGIE) {
+		disable_interrupts(GLOBAL);
+	}
 
-   eaDogM_WriteCommand((EADOGM_CMD_DDRAM_ADDR + (r * EADOGM_COLSPAN) + c));
+	eaDogM_WriteCommand((EADOGM_CMD_DDRAM_ADDR + (r * EADOGM_COLSPAN) + c));
 
-   eaDogM_WriteChr(i/10+'0');
-   eaDogM_WriteChr(i%10+'0');
+	eaDogM_WriteChr(i / 10 + '0');
+	eaDogM_WriteChr(i % 10 + '0');
 
-   if (DisGIE) {
-      enable_interrupts(GLOBAL);
-      }
+	if (DisGIE) {
+		enable_interrupts(GLOBAL);
+	}
 }
 
 // this writes a byte to the internal CGRAM (v2.02)
 // format for ndx: 00CCCRRR = CCC = character 0 to 7, RRR = row 0 to 7
+
 void eaDogM_WriteByteToCGRAM(char ndx, char data)
 {
-   unsigned int cmd;
+	unsigned int cmd;
 
-   cmd = ndx & 0b00111111; // mask off upper to bits
-   cmd = cmd | EADOGM_CMD_CGRAM_ADDR; // set bit cmd bits
+	cmd = ndx & 0b00111111; // mask off upper to bits
+	cmd = cmd | EADOGM_CMD_CGRAM_ADDR; // set bit cmd bits
 
-   eaDogM_WriteCommand(cmd);
-   eaDogM_WriteChr(data);
+	eaDogM_WriteCommand(cmd);
+	eaDogM_WriteChr(data);
 
-   // this is done to make sure we are back in data mode
-   eaDogM_SetPos(0,0);
+	// this is done to make sure we are back in data mode
+	eaDogM_SetPos(0, 0);
 }
 
 

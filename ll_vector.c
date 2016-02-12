@@ -110,7 +110,7 @@ void data_handler(void)
 			}
 		}
 		if (spi_link.SPI_AUX) {
-			TRISBbits.TRISB4=LOW; // config it for a slave select
+			TRISBbits.TRISB4 = LOW; // config it for a slave select
 			CSA = LOW; // select the AUX SPI receiver
 		}
 	}

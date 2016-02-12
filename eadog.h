@@ -40,12 +40,12 @@ extern "C" {
 	void start_lcd(void);
 	void wait_lcd(void);
 
-	void eaDogM_WriteChr(char);
+	void eaDogM_WriteChr(int8_t);
 	void eaDogM_WriteCommand(uint8_t);
 	void eaDogM_SetPos(uint8_t, uint8_t);
 	void eaDogM_ClearRow(uint8_t);
-	void eaDogM_WriteString(char *);
-	void eaDogM_WriteStringAtPos(uint8_t, uint8_t, char *);
+	void eaDogM_WriteString(int8_t *);
+	void eaDogM_WriteStringAtPos(uint8_t, uint8_t, int8_t *);
 	void eaDogM_WriteIntAtPos(uint8_t, uint8_t, uint8_t);
 	void eaDogM_WriteByteToCGRAM(uint8_t, uint8_t);
 

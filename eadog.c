@@ -68,7 +68,7 @@ void wait_lcd(void)
 	while (spi_link.LCD_DATA);
 }
 
-void eaDogM_WriteChr(char value)
+void eaDogM_WriteChr(int8_t value)
 {
 	send_lcd_data(value);
 	start_lcd();
@@ -78,7 +78,7 @@ void eaDogM_WriteChr(char value)
 /*
  * STDOUT user handler function
  */
-int _user_putc(char c)
+int _user_putc(int8_t c)
 {
 	send_lcd_data(c);
 }
@@ -106,7 +106,7 @@ void eaDogM_ClearRow(uint8_t r)
 	}
 }
 
-void eaDogM_WriteString(char *strPtr)
+void eaDogM_WriteString(int8_t *strPtr)
 {
 	if (strlen(strPtr) > max_strlen) strPtr[max_strlen] = 0;
 	printf("%s", strPtr); // STDOUT redirected to _user_putc, slow ~380us
@@ -114,7 +114,7 @@ void eaDogM_WriteString(char *strPtr)
 	wait_lcd();
 }
 
-void eaDogM_WriteStringAtPos(uint8_t r, uint8_t c, char *strPtr)
+void eaDogM_WriteStringAtPos(uint8_t r, uint8_t c, int8_t *strPtr)
 {
 	send_lcd_cmd((EADOGM_CMD_DDRAM_ADDR + (r * EADOGM_COLSPAN) + c));
 	if (strlen(strPtr) > max_strlen) strPtr[max_strlen] = 0;

@@ -29,8 +29,8 @@ extern "C" {
 #define SLAVE_ACTIVE		10	// Activity counter level
 
 	/* DIO defines */
-#define LOW			(unsigned char)0        // digital output state levels, sink
-#define	HIGH			(unsigned char)1        // digital output state levels, source
+#define LOW			(uint8_t)0        // digital output state levels, sink
+#define	HIGH			(uint8_t)1        // digital output state levels, source
 #define IN			HIGH
 #define OUT			LOW
 #define	ON			LOW       		//
