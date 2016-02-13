@@ -214,6 +214,10 @@ void wdtdelay(uint32_t delay)
 
 void config_pic(void)
 {
+	/* set these boot bits so we can check for rests later */
+	RCONbits.BOR = 1;
+	RCONbits.POR = 1;
+
 	if (RCONbits.TO == (uint8_t) LOW) WDT_TO = TRUE;
 	if (EECON1bits.WRERR && (EECON1bits.EEPGD == (uint8_t) LOW)) EEP_ER = TRUE;
 	/*
